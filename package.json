@@ -1,0 +1,10 @@
+{
+  "name": "dnabeat-pro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DNAbeat.pro — Music DNA v3 SaaS (Suno prompt reverse-engineering)",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

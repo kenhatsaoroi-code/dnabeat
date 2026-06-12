@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DNAbeat.pro — Giải mã DNA bài hát thành Suno prompt</title>
+<meta name="description" content="Upload bài hát — AI nghe thật và tái tạo Suno prompt chuẩn 99%. Quét DNA, tinh chỉnh, biến tấu style.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a; --panel:#11182bcc; --panel2:#161f36; --line:#232c45;
+  --txt:#e8ecf6; --dim:#8b94ad;
+  --amber:#ffb347; --pink:#ff6b9d; --amber-soft:rgba(255,179,71,.12);
+  --mono:'JetBrains Mono',monospace; --disp:'Unbounded',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(900px 500px at 80% -10%, rgba(255,179,71,.08), transparent 60%),
+  radial-gradient(700px 500px at 10% 110%, rgba(255,107,157,.07), transparent 60%);
+  pointer-events:none;z-index:0}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.logo{font-family:var(--disp);font-weight:900;font-size:20px;letter-spacing:.5px}
+.logo b{background:linear-gradient(120deg,var(--amber),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-r{display:flex;align-items:center;gap:14px}
+.lang{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer;background:var(--panel2);color:var(--dim);transition:.2s}
+.lang:hover{border-color:var(--amber);color:var(--amber)}
+.btn{display:inline-flex;align-items:center;gap:9px;border:none;border-radius:13px;padding:13px 22px;font-weight:600;font-size:15px;cursor:pointer;transition:.25s;font-family:'Inter',sans-serif}
+.btn-g{background:linear-gradient(120deg,var(--amber),var(--pink));color:#1a0f00}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,150,100,.35)}
+.btn-o{background:var(--panel2);border:1px solid var(--line);color:var(--txt)}
+.btn-o:hover{border-color:var(--amber)}
+.btn svg{width:18px;height:18px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:64px 0 80px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--amber)}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.5vw,48px);line-height:1.18;margin-bottom:20px}
+h1 .grad{background:linear-gradient(120deg,var(--amber),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--dim);font-size:17px;max-width:520px;margin-bottom:32px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.micro{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:16px}
+.micro b{color:var(--amber)}
+
+/* helix */
+.helix-box{position:relative;height:420px;display:flex;align-items:center;justify-content:center}
+#helix{width:100%;height:100%}
+
+/* steps */
+.sec{padding:70px 0}
+.sec-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);margin-bottom:12px}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(22px,3vw,32px);margin-bottom:14px}
+.sec-sub{color:var(--dim);max-width:560px;margin-bottom:42px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;padding:26px;transition:.25s;position:relative}
+.step:hover{border-color:var(--amber);transform:translateY(-3px)}
+.step .ico{font-size:26px;margin-bottom:14px}
+.step h3{font-size:16.5px;margin-bottom:8px}
+.step p{color:var(--dim);font-size:14px}
+.step .tag{position:absolute;top:20px;right:20px;font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-soft);border-radius:8px;padding:3px 9px}
+
+/* tabs feature */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feat .step h3 span{font-family:var(--mono);font-size:12px;color:var(--pink);display:block;margin-bottom:6px;letter-spacing:1px}
+
+/* pricing */
+.prices{display:grid;grid-template-columns:repeat(2,minmax(0,420px));gap:22px;justify-content:center}
+.price{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:22px;padding:34px;position:relative}
+.price.hot{border-color:var(--amber);box-shadow:0 0 40px rgba(255,179,71,.12)}
+.price .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(120deg,var(--amber),var(--pink));color:#1a0f00;font-size:12px;font-weight:700;border-radius:99px;padding:5px 16px;font-family:var(--mono)}
+.price .pname{font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.price .amount{font-family:var(--disp);font-weight:900;font-size:42px;margin-bottom:4px}
+.price .amount small{font-size:15px;font-weight:500;color:var(--dim);font-family:'Inter',sans-serif}
+.price ul{list-style:none;margin:22px 0 26px;display:grid;gap:11px}
+.price li{display:flex;gap:10px;font-size:14.5px;color:var(--dim)}
+.price li::before{content:'✓';color:var(--amber);font-weight:700}
+.price li.no::before{content:'—';color:var(--line)}
+.price .btn{width:100%;justify-content:center}
+.soon{font-family:var(--mono);font-size:11.5px;color:var(--dim);text-align:center;margin-top:10px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:34px 0;margin-top:50px;display:flex;justify-content:space-between;align-items:center;color:var(--dim);font-size:13px;font-family:var(--mono)}
+
+@media(max-width:880px){
+  .hero{grid-template-columns:1fr;padding-top:36px}
+  .helix-box{height:300px;order:-1}
+  .steps,.feat{grid-template-columns:1fr}
+  .prices{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:10px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.btn:focus-visible,.lang:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <a class="logo" href="/">DNA<b>beat</b><span style="color:var(--dim);font-weight:500">.pro</span></a>
+    <div class="nav-r">
+      <button class="lang" id="langBtn" aria-label="Switch language">VI / EN</button>
+      <button class="btn btn-g" id="loginBtn">
+        <svg viewBox="0 0 24 24"><path fill="#1a0f00" d="M21.35 11.1H12v2.9h5.35c-.5 2.5-2.6 3.9-5.35 3.9a6 6 0 1 1 0-12c1.5 0 2.9.55 3.95 1.55l2.15-2.15A9 9 0 1 0 12 21c5.2 0 8.85-3.65 8.85-8.8 0-.4-.05-.75-.1-1.1Z"/></svg>
+        <span data-i="login">Đăng nhập Google</span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow" data-i="eyebrow">AI nghe nhạc thật · Gemini Audio</div>
+      <h1><span data-i="h1a">Giải mã</span> <span class="grad">DNA</span> <span data-i="h1b">của bất kỳ bài hát nào thành Suno prompt</span></h1>
+      <p class="sub" data-i="sub">Upload bài hát bạn thích — AI nghe từng nhịp trống, từng chất giọng, từng lớp mix, rồi tái tạo prompt Suno chuẩn tới 99%. Tinh chỉnh, biến tấu style chỉ trong một cú click.</p>
+      <div class="hero-cta">
+        <button class="btn btn-g" id="loginBtn2">
+          <svg viewBox="0 0 24 24"><path fill="#1a0f00" d="M21.35 11.1H12v2.9h5.35c-.5 2.5-2.6 3.9-5.35 3.9a6 6 0 1 1 0-12c1.5 0 2.9.55 3.95 1.55l2.15-2.15A9 9 0 1 0 12 21c5.2 0 8.85-3.65 8.85-8.8 0-.4-.05-.75-.1-1.1Z"/></svg>
+          <span data-i="cta">Bắt đầu miễn phí</span>
+        </button>
+        <a class="btn btn-o" href="#pricing" data-i="ctaPrice">Xem bảng giá</a>
+      </div>
+      <div class="micro" data-i="micro"><b>5 lượt quét miễn phí</b> mỗi ngày · không cần thẻ</div>
+    </div>
+    <div class="helix-box" aria-hidden="true"><canvas id="helix"></canvas></div>
+  </header>
+
+  <section class="sec" id="how">
+    <div class="sec-eyebrow" data-i="howEye">Cách hoạt động</div>
+    <h2 data-i="howH">Từ file nhạc đến prompt — 3 bước</h2>
+    <p class="sec-sub" data-i="howSub">Không đoán mò theo metadata. Gemini Audio nghe trực tiếp waveform của bài hát.</p>
+    <div class="steps">
+      <div class="step"><div class="tag">01</div><div class="ico">🎧</div><h3 data-i="s1h">Upload bài hát</h3><p data-i="s1p">MP3, WAV, M4A... Tool tự cắt 60 giây đầu và nén gọn ngay trên trình duyệt — file của bạn không lưu lại đâu cả.</p></div>
+      <div class="step"><div class="tag">02</div><div class="ico">🧬</div><h3 data-i="s2h">AI nghe & giải mã</h3><p data-i="s2p">Gemini phân tích BPM, key, nhạc cụ, chất giọng, cấu trúc, kiểu mix — toàn bộ DNA âm thanh của bài hát.</p></div>
+      <div class="step"><div class="tag">03</div><div class="ico">⚡</div><h3 data-i="s3h">Nhận Suno prompt</h3><p data-i="s3p">Title, Style ≤25 từ, Exclude Styles, khung lyrics theo section tag, và More Options chuẩn — copy thẳng vào Suno.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="features">
+    <div class="sec-eyebrow" data-i="ftEye">3 chế độ trong tool</div>
+    <h2 data-i="ftH">MUSIC DNA v3</h2>
+    <p class="sec-sub" data-i="ftSub">Một quy trình khép kín: quét — tinh chỉnh — biến tấu.</p>
+    <div class="feat">
+      <div class="step"><div class="ico">🎧</div><h3><span>TAB 1</span><span data-i="f1h">Quét & Tạo Prompt</span></h3><p data-i="f1p">Nghe bài gốc và tái tạo prompt Suno hoàn chỉnh kèm phân tích chi tiết những gì AI nghe được.</p></div>
+      <div class="step"><div class="ico">🔁</div><h3><span>TAB 2</span><span data-i="f2h">Tinh chỉnh 99%</span></h3><p data-i="f2p">Bản Suno render ra chưa giống? Đưa feedback — AI chẩn đoán prompt thiếu gì và chỉnh tới khi khớp 99%.</p></div>
+      <div class="step"><div class="ico">🎨</div><h3><span>TAB 3</span><span data-i="f3h">Biến tấu Style</span></h3><p data-i="f3p">Giữ nguyên DNA bài gốc nhưng chuyển sang style, giọng hát, mood hoàn toàn mới — phonk, lo-fi, K-pop, EDM...</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="sec-eyebrow" data-i="prEye">Bảng giá</div>
+    <h2 data-i="prH">Bắt đầu free, nâng cấp khi cần</h2>
+    <p class="sec-sub" data-i="prSub">Một gói duy nhất. Không phí ẩn.</p>
+    <div class="prices">
+      <div class="price">
+        <div class="pname">Free</div>
+        <div class="amount">$0<small data-i="pm"> /tháng</small></div>
+        <ul>
+          <li data-i="fr1">5 lượt phân tích mỗi ngày</li>
+          <li data-i="fr2">Đủ cả 3 tab: Quét, Tinh chỉnh, Biến tấu</li>
+          <li data-i="fr3">Song ngữ VI / EN</li>
+          <li class="no" data-i="fr4">Lượt không giới hạn</li>
+        </ul>
+        <button class="btn btn-o" id="loginBtn3" style="width:100%;justify-content:center" data-i="frCta">Dùng miễn phí</button>
+      </div>
+      <div class="price hot">
+        <div class="badge">PREMIUM</div>
+        <div class="pname">Premium</div>
+        <div class="amount">$10<small data-i="pm2"> /tháng</small></div>
+        <ul>
+          <li data-i="pr1">Lượt phân tích không giới hạn</li>
+          <li data-i="pr2">Ưu tiên model mới nhất</li>
+          <li data-i="pr3">Hỗ trợ qua email</li>
+          <li data-i="pr4">Huỷ bất cứ lúc nào</li>
+        </ul>
+        <button class="btn btn-g" id="paypalBtn" style="width:100%;justify-content:center" data-i="prCta">Nâng cấp Premium</button>
+        <div class="soon" data-i="soon">Thanh toán PayPal — sắp ra mắt</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 DNAbeat.pro</div>
+    <div data-i="foot">Made for Suno creators 🎵</div>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ============ i18n ============ */
+const I18N = {
+vi:{ login:'Đăng nhập Google', eyebrow:'AI nghe nhạc thật · Gemini Audio',
+h1a:'Giải mã', h1b:'của bất kỳ bài hát nào thành Suno prompt',
+sub:'Upload bài hát bạn thích — AI nghe từng nhịp trống, từng chất giọng, từng lớp mix, rồi tái tạo prompt Suno chuẩn tới 99%. Tinh chỉnh, biến tấu style chỉ trong một cú click.',
+cta:'Bắt đầu miễn phí', ctaPrice:'Xem bảng giá', micro:'<b>5 lượt quét miễn phí</b> mỗi ngày · không cần thẻ',
+howEye:'Cách hoạt động', howH:'Từ file nhạc đến prompt — 3 bước', howSub:'Không đoán mò theo metadata. Gemini Audio nghe trực tiếp waveform của bài hát.',
+s1h:'Upload bài hát', s1p:'MP3, WAV, M4A... Tool tự cắt 60 giây đầu và nén gọn ngay trên trình duyệt — file của bạn không lưu lại đâu cả.',
+s2h:'AI nghe & giải mã', s2p:'Gemini phân tích BPM, key, nhạc cụ, chất giọng, cấu trúc, kiểu mix — toàn bộ DNA âm thanh của bài hát.',
+s3h:'Nhận Suno prompt', s3p:'Title, Style ≤25 từ, Exclude Styles, khung lyrics theo section tag, và More Options chuẩn — copy thẳng vào Suno.',
+ftEye:'3 chế độ trong tool', ftH:'MUSIC DNA v3', ftSub:'Một quy trình khép kín: quét — tinh chỉnh — biến tấu.',
+f1h:'Quét & Tạo Prompt', f1p:'Nghe bài gốc và tái tạo prompt Suno hoàn chỉnh kèm phân tích chi tiết những gì AI nghe được.',
+f2h:'Tinh chỉnh 99%', f2p:'Bản Suno render ra chưa giống? Đưa feedback — AI chẩn đoán prompt thiếu gì và chỉnh tới khi khớp 99%.',
+f3h:'Biến tấu Style', f3p:'Giữ nguyên DNA bài gốc nhưng chuyển sang style, giọng hát, mood hoàn toàn mới — phonk, lo-fi, K-pop, EDM...',
+prEye:'Bảng giá', prH:'Bắt đầu free, nâng cấp khi cần', prSub:'Một gói duy nhất. Không phí ẩn.',
+pm:' /tháng', pm2:' /tháng',
+fr1:'5 lượt phân tích mỗi ngày', fr2:'Đủ cả 3 tab: Quét, Tinh chỉnh, Biến tấu', fr3:'Song ngữ VI / EN', fr4:'Lượt không giới hạn', frCta:'Dùng miễn phí',
+pr1:'Lượt phân tích không giới hạn', pr2:'Ưu tiên model mới nhất', pr3:'Hỗ trợ qua email', pr4:'Huỷ bất cứ lúc nào', prCta:'Nâng cấp Premium',
+soon:'Thanh toán PayPal — sắp ra mắt', foot:'Made for Suno creators 🎵' },
+en:{ login:'Sign in with Google', eyebrow:'AI that truly listens · Gemini Audio',
+h1a:'Decode the', h1b:'of any song into a Suno prompt',
+sub:'Upload any song you love — AI listens to every drum hit, vocal texture and mix layer, then reverse-engineers a Suno prompt up to 99% accurate. Refine and remix in one click.',
+cta:'Start for free', ctaPrice:'See pricing', micro:'<b>5 free scans</b> every day · no card needed',
+howEye:'How it works', howH:'From audio file to prompt — 3 steps', howSub:'No metadata guessing. Gemini Audio listens to the actual waveform.',
+s1h:'Upload a song', s1p:'MP3, WAV, M4A... The tool trims the first 60 seconds and compresses it in your browser — your file is never stored.',
+s2h:'AI listens & decodes', s2p:'Gemini analyzes BPM, key, instruments, vocal character, structure and mix style — the full sonic DNA.',
+s3h:'Get your Suno prompt', s3p:'Title, Style ≤25 words, Exclude Styles, section-tagged lyric skeleton and tuned More Options — paste straight into Suno.',
+ftEye:'3 modes in one tool', ftH:'MUSIC DNA v3', ftSub:'A closed loop: scan — refine — remix.',
+f1h:'Scan & Create Prompt', f1p:'Listens to the original and rebuilds a complete Suno prompt with a detailed breakdown of what the AI heard.',
+f2h:'Refine to 99%', f2p:'Suno render not close enough? Give feedback — AI diagnoses what the prompt misses and tunes it to a 99% match.',
+f3h:'Style Remix', f3p:'Keep the original DNA but transform style, vocals and mood — phonk, lo-fi, K-pop, EDM, anything.',
+prEye:'Pricing', prH:'Start free, upgrade when you need', prSub:'One plan. No hidden fees.',
+pm:' /month', pm2:' /month',
+fr1:'5 analyses per day', fr2:'All 3 tabs: Scan, Refine, Remix', fr3:'Bilingual VI / EN', fr4:'Unlimited analyses', frCta:'Use for free',
+pr1:'Unlimited analyses', pr2:'Priority on latest models', pr3:'Email support', pr4:'Cancel anytime', prCta:'Upgrade to Premium',
+soon:'PayPal checkout — coming soon', foot:'Made for Suno creators 🎵' }
+};
+let lang = localStorage.getItem('dnabeat_lang') || 'vi';
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k = el.getAttribute('data-i');
+    if(I18N[lang][k] !== undefined) el.innerHTML = I18N[lang][k];
+  });
+  document.getElementById('langBtn').textContent = lang==='vi' ? 'VI / EN' : 'EN / VI';
+}
+document.getElementById('langBtn').onclick = ()=>{ lang = lang==='vi'?'en':'vi'; localStorage.setItem('dnabeat_lang',lang); applyLang(); };
+applyLang();
+
+/* ============ Supabase auth ============ */
+const SUPABASE_URL = 'https://ynyfvszgxhmldjnlcmcy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_gHDgLR-T4w6Gjk2bsIHTZg_1fbt8-dD';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function login(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) { location.href = '/app'; return; }
+  await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{ redirectTo: location.origin + '/app' }
+  });
+}
+['loginBtn','loginBtn2','loginBtn3'].forEach(id=>{ document.getElementById(id).onclick = login; });
+
+// already signed in → change button text
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session){
+    const t = lang==='vi' ? 'Mở tool →' : 'Open tool →';
+    ['loginBtn','loginBtn2'].forEach(id=>{ document.getElementById(id).querySelector('span').textContent = t; });
+  }
+});
+
+// PayPal placeholder
+document.getElementById('paypalBtn').onclick = ()=>{
+  alert(lang==='vi' ? 'Thanh toán PayPal sắp ra mắt! Hiện tại bạn có thể dùng gói Free (5 lượt/ngày).'
+                    : 'PayPal checkout coming soon! For now, enjoy the Free plan (5 scans/day).');
+};
+
+/* ============ DNA waveform helix (signature) ============ */
+const cv = document.getElementById('helix'), ctx = cv.getContext('2d');
+let W,H,t=0;
+function size(){ const r=cv.parentElement.getBoundingClientRect(); W=cv.width=r.width*devicePixelRatio; H=cv.height=r.height*devicePixelRatio; }
+size(); addEventListener('resize', size);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const n=42, cx=W/2, amp=W*0.16, mid=H/2;
+  for(let i=0;i<n;i++){
+    const y = (i/(n-1))*H*0.86 + H*0.07;
+    const ph = i*0.32 + t;
+    const x1 = cx + Math.sin(ph)*amp;
+    const x2 = cx + Math.sin(ph+Math.PI)*amp;
+    const d1 = (Math.sin(ph)+1)/2, d2 = (Math.sin(ph+Math.PI)+1)/2;
+    // rung between strands
+    ctx.strokeStyle='rgba(139,148,173,.14)'; ctx.lineWidth=1*devicePixelRatio;
+    ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
+    // waveform bars on each strand
+    const bh1 = (6+Math.abs(Math.sin(ph*2.3+t*1.7))*16)*devicePixelRatio;
+    const bh2 = (6+Math.abs(Math.cos(ph*1.9+t*1.3))*16)*devicePixelRatio;
+    ctx.fillStyle=`rgba(255,179,71,${.35+.55*d1})`;
+    ctx.fillRect(x1-2*devicePixelRatio, y-bh1/2, 4*devicePixelRatio, bh1);
+    ctx.fillStyle=`rgba(255,107,157,${.35+.55*d2})`;
+    ctx.fillRect(x2-2*devicePixelRatio, y-bh2/2, 4*devicePixelRatio, bh2);
+  }
+  t += 0.012;
+  if(!reduced) requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
