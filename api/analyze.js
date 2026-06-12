@@ -7,6 +7,8 @@ const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const GEMINI_KEY   = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const FREE_LIMIT   = 5;
+const MONTHLY_CREDITS = 10000;
+const COSTS = { scan: 20, tune: 20, remix: 20, timing: 250 };
 
 export const config = { api: { bodyParser: { sizeLimit: '4.5mb' } } };
 
@@ -226,16 +228,6 @@ export default async function handler(req, res) {
   const user = await getUserFromReq(req, sb);
   if (!user) return res.status(401).json({ error: 'unauthorized' });
 
-  const { data: profile } = await sb.from('profiles').select('plan').eq('id', user.id).maybeSingle();
-  const plan = profile?.plan === 'premium' ? 'premium' : 'free';
-
-  const day = todayUTC();
-  const { data: row } = await sb.from('usage_daily').select('count').eq('user_id', user.id).eq('day', day).maybeSingle();
-  const count = row?.count || 0;
-  if (plan === 'free' && count >= FREE_LIMIT) {
-    return res.status(429).json({ error: 'limit_reached', plan, count, limit: FREE_LIMIT });
-  }
-
   const { mode, audio, sunoAudio, mimeType = 'audio/wav',
           currentStyle, currentExclude, currentLyrics, feedback,
           dna, target, lyrics } = req.body || {};
@@ -245,6 +237,38 @@ export default async function handler(req, res) {
   if (mode === 'tune' && (!audio || !sunoAudio)) return res.status(400).json({ error: 'both_audio_required' });
   if (mode === 'remix' && !dna) return res.status(400).json({ error: 'dna_required' });
   if (mode === 'timing' && !lyrics) return res.status(400).json({ error: 'lyrics_required' });
+
+  const { data: profile } = await sb.from('profiles')
+    .select('plan, credits, credits_reset_at').eq('id', user.id).maybeSingle();
+  const plan = profile?.plan === 'premium' ? 'premium' : 'free';
+  const cost = COSTS[mode];
+
+  let credits = profile?.credits || 0;
+  const day = todayUTC();
+  let count = 0;
+
+  if (plan === 'premium') {
+    // Lazy monthly refill: if reset date is older than 30 days (or missing), top up
+    const resetAt = profile?.credits_reset_at ? new Date(profile.credits_reset_at) : null;
+    const expired = !resetAt || (Date.now() - resetAt.getTime()) > 30 * 24 * 3600 * 1000;
+    if (expired) {
+      credits = MONTHLY_CREDITS;
+      await sb.from('profiles').update({ credits, credits_reset_at: new Date().toISOString() }).eq('id', user.id);
+    }
+    if (credits < cost) {
+      return res.status(429).json({ error: 'no_credits', plan, credits, cost });
+    }
+  } else {
+    // Free plan: ONLY scan is available — everything else is premium
+    if (mode !== 'scan') {
+      return res.status(403).json({ error: 'premium_required', plan });
+    }
+    const { data: row } = await sb.from('usage_daily').select('count').eq('user_id', user.id).eq('day', day).maybeSingle();
+    count = row?.count || 0;
+    if (count >= FREE_LIMIT) {
+      return res.status(429).json({ error: 'limit_reached', plan, count, limit: FREE_LIMIT });
+    }
+  }
 
   let parts;
   if (mode === 'scan') {
@@ -276,11 +300,13 @@ export default async function handler(req, res) {
     return res.status(502).json({ error: 'gemini_failed', detail: String(e.message || e) });
   }
 
-  const newCount = count + 1;
-  await sb.from('usage_daily').upsert({ user_id: user.id, day, count: newCount }, { onConflict: 'user_id,day' });
-
-  return res.status(200).json({
-    result,
-    usage: { plan, count: newCount, limit: plan === 'premium' ? null : FREE_LIMIT }
-  });
+  if (plan === 'premium') {
+    const newCredits = credits - cost;
+    await sb.from('profiles').update({ credits: newCredits }).eq('id', user.id);
+    return res.status(200).json({ result, usage: { plan, credits: newCredits, cost } });
+  } else {
+    const newCount = count + 1;
+    await sb.from('usage_daily').upsert({ user_id: user.id, day, count: newCount }, { onConflict: 'user_id,day' });
+    return res.status(200).json({ result, usage: { plan, count: newCount, limit: FREE_LIMIT } });
+  }
 }
