@@ -49,6 +49,9 @@ h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:tex
 .tab::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:.3s}
 .tab:hover{border-color:var(--amber);transform:translateY(-2px);box-shadow:0 6px 18px rgba(255,179,71,.12)}
 .tab.on{border-color:var(--amber);background:var(--amber-soft);color:var(--amber);font-weight:600;box-shadow:0 0 22px rgba(255,179,71,.15),inset 0 0 18px rgba(255,179,71,.05)}
+.tab .lock{font-size:11px;opacity:.8;margin-left:2px}
+.tab.unlocked .lock{display:none}
+.freebadge{font-family:var(--mono);font-size:9.5px;background:var(--grad);color:#1a0f00;border-radius:6px;padding:1px 6px;font-weight:700;vertical-align:middle;margin-left:3px}
 .pane{display:none}
 .pane.on{display:block;animation:paneIn .45s cubic-bezier(.2,.8,.2,1)}
 @keyframes paneIn{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
@@ -205,10 +208,10 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
   <p class="subtitle">AI that truly listens via Gemini — scan DNA, refine to 99%, remix styles, sync lyrics.</p>
 
   <div class="tabs" role="tablist">
-    <div class="tab on" data-pane="paneScan" role="tab" tabindex="0">🎧 Scan & Create Prompt</div>
-    <div class="tab" data-pane="paneTune" role="tab" tabindex="0">🔁 Refine to 99%</div>
-    <div class="tab" data-pane="paneRemix" role="tab" tabindex="0">🎨 Style Remix</div>
-    <div class="tab" data-pane="paneTiming" role="tab" tabindex="0">⏱ Lyrics Timing</div>
+    <div class="tab on" data-pane="paneScan" role="tab" tabindex="0">🎧 Scan & Create Prompt <span class="freebadge">FREE</span></div>
+    <div class="tab" data-pane="paneTune" data-premium="1" role="tab" tabindex="0">🔁 Refine to 99% <span class="lock">🔒</span></div>
+    <div class="tab" data-pane="paneRemix" data-premium="1" role="tab" tabindex="0">🎨 Style Remix <span class="lock">🔒</span></div>
+    <div class="tab" data-pane="paneTiming" data-premium="1" role="tab" tabindex="0">⏱ Lyrics Timing <span class="lock">🔒</span></div>
   </div>
 
   <!-- ============ TAB 1: SCAN ============ -->
@@ -311,13 +314,33 @@ Section headers like [Verse] / [Chorus] are OK, they will be skipped."></textare
   </div>
 </div>
 
-<!-- limit modal -->
+<!-- premium modal -->
 <div class="modal-bg" id="limitModal">
-  <div class="modal">
-    <h3>Out of free scans for today 😅</h3>
-    <p>The Free plan includes 5 analyses per day (resets 0:00 UTC). Upgrade to Premium for unlimited — $10/month.</p>
-    <button class="btn" id="lmUpgrade">Upgrade to Premium</button>
-    <button class="later" id="lmLater">Come back tomorrow</button>
+  <div class="modal" style="max-width:460px;text-align:left">
+    <h3 style="text-align:center" id="pmTitle">⭐ Upgrade to Premium</h3>
+    <p style="text-align:center" id="pmSub">$10/month · 10,000 credits</p>
+    <ul class="plain" style="margin:0 0 18px;color:var(--txt)">
+      <li><b>10,000 credits</b> every month</li>
+      <li><b>🎧 Scan & Create Prompt</b> — 20 credits (≈500 scans/mo)</li>
+      <li><b>🔁 Refine to 99%</b> — 20 credits · compare original vs Suno render</li>
+      <li><b>🎨 Style Remix</b> — 20 credits · transform any song's DNA</li>
+      <li><b>⏱ Lyrics Timing</b> — 250 credits · AI-synced LRC/SRT export</li>
+      <li>Priority on the newest AI models</li>
+      <li>Direct admin support on Telegram</li>
+      <li>Out of credits? Top up <b>$5 = 3,000 credits</b> anytime</li>
+      <li>Cancel anytime</li>
+    </ul>
+    <div id="paypalBox" style="margin-bottom:10px"></div>
+    <div id="topupBox" style="display:none;margin-bottom:10px">
+      <div style="font-family:var(--mono);font-size:12px;color:var(--amber);text-align:center;margin-bottom:8px">⚡ TOP-UP: $5 = 3,000 credits (instant, no waiting for monthly reset)</div>
+      <div id="topupBtn"></div>
+    </div>
+    <a class="btn" href="https://t.me/xiaosonghehe" target="_blank" rel="noopener" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);text-decoration:none">
+      ✈️ Contact admin on Telegram — @xiaosonghehe
+    </a>
+    <div style="text-align:center">
+      <button class="later" id="lmLater">Maybe later</button>
+    </div>
   </div>
 </div>
 
@@ -326,6 +349,9 @@ Section headers like [Verse] / [Chorus] are OK, they will be skipped."></textare
 /* ================= CONFIG ================= */
 const SUPABASE_URL = 'https://ynyfvszgxhmldjnlcmcy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_gHDgLR-T4w6Gjk2bsIHTZg_1fbt8-dD';
+const PAYPAL_CLIENT_ID = 'YOUR_PAYPAL_CLIENT_ID';   // <-- dán Client ID PayPal vào đây
+const PAYPAL_PLAN_ID   = 'YOUR_PAYPAL_PLAN_ID';     // <-- dán Plan ID ($10/month) vào đây
+const TELEGRAM_ADMIN   = 'https://t.me/xiaosonghehe';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const TXT = {
@@ -402,15 +428,19 @@ async function refreshUsage(){
   try{
     const r = await fetch('/api/usage', { headers:{ Authorization:'Bearer '+session.access_token }});
     const d = await r.json();
+    userPlan = d.plan || 'free';
+    applyPlanUI();
     const pill = document.getElementById('usagePill');
-    if(d.plan==='premium') pill.innerHTML = '⭐ <b>Premium</b> · ∞';
-    else pill.innerHTML = `🎫 <b>${d.remaining}</b>/${d.limit} left today`;
+    if(d.plan==='premium') pill.innerHTML = `⚡ <b>${(d.credits??0).toLocaleString()}</b> credits`;
+    else pill.innerHTML = `🎫 <b>${d.remaining}</b>/${d.limit} free scans today`;
   }catch(e){}
 }
 
 /* ================= TABS ================= */
+let userPlan = 'free';
 document.querySelectorAll('.tab').forEach(t=>{
   const go = ()=>{
+    if(t.dataset.premium && userPlan !== 'premium'){ showLimit(); return; }
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
     t.classList.add('on');
@@ -419,6 +449,11 @@ document.querySelectorAll('.tab').forEach(t=>{
   t.onclick = go;
   t.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} };
 });
+function applyPlanUI(){
+  document.querySelectorAll('.tab[data-premium]').forEach(t=>{
+    t.classList.toggle('unlocked', userPlan === 'premium');
+  });
+}
 
 /* ================= AUDIO PREP ================= */
 async function prepareAudio(file, maxSecs = 60, rate = 16000, bits = 16){
@@ -468,7 +503,7 @@ async function callAPI(payload){
     body: JSON.stringify(payload)
   });
   const d = await r.json();
-  if(r.status===429 && d.error==='limit_reached'){ showLimit(); throw new Error('limit'); }
+  if((r.status===429 && (d.error==='limit_reached'||d.error==='no_credits')) || (r.status===403 && d.error==='premium_required')){ showLimit(d.error); throw new Error('limit'); }
   if(!r.ok) throw new Error(d.detail || d.error || ('HTTP '+r.status));
   refreshUsage();
   return d.result;
@@ -760,10 +795,108 @@ function renderTiming(res){
   R.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-/* ================= LIMIT MODAL ================= */
-function showLimit(){ document.getElementById('limitModal').classList.add('on'); }
+/* ================= PREMIUM MODAL + PAYPAL ================= */
+let paypalSdkIntent = null; // 'subscription' | 'capture'
+function showLimit(reason){
+  const title = document.getElementById('pmTitle');
+  const sub = document.getElementById('pmSub');
+  const topup = document.getElementById('topupBox');
+  const subBox = document.getElementById('paypalBox');
+  if(reason === 'limit_reached'){
+    title.textContent = 'Out of free scans for today 😅';
+    sub.textContent = 'Free resets at 0:00 UTC — or go unlimited with Premium:';
+    topup.style.display='none'; subBox.style.display='block';
+    loadPayPal('subscription');
+  } else if(reason === 'no_credits'){
+    title.textContent = 'Out of credits this month ⚡';
+    sub.textContent = 'Top up instantly, or wait for your monthly refill:';
+    topup.style.display='block'; subBox.style.display='none';
+    loadPayPal('capture');
+  } else {
+    title.textContent = '⭐ This feature is Premium';
+    sub.textContent = '$10/month · 10,000 credits · everything unlocked';
+    topup.style.display='none'; subBox.style.display='block';
+    loadPayPal('subscription');
+  }
+  document.getElementById('limitModal').classList.add('on');
+}
 document.getElementById('lmLater').onclick = ()=>document.getElementById('limitModal').classList.remove('on');
-document.getElementById('lmUpgrade').onclick = ()=>{ alert(T('soon')); };
+
+function loadPayPal(intent){
+  if(PAYPAL_CLIENT_ID.startsWith('YOUR_')){
+    document.getElementById('paypalBox').innerHTML =
+      '<div style="font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center;padding:8px;border:1px dashed var(--line);border-radius:10px">💳 PayPal checkout — coming soon. Pay via Telegram admin below 👇</div>';
+    document.getElementById('topupBtn').innerHTML =
+      '<div style="font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center;padding:8px;border:1px dashed var(--line);border-radius:10px">💳 Top-up via Telegram admin below 👇</div>';
+    return;
+  }
+  if(paypalSdkIntent === intent){ return; }
+  // Remove previous SDK if intent differs
+  document.querySelectorAll('script[data-pp-sdk]').forEach(x=>x.remove());
+  delete window.paypal;
+  const sc = document.createElement('script');
+  sc.dataset.ppSdk = '1';
+  sc.src = intent === 'subscription'
+    ? `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&vault=true&intent=subscription`
+    : `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&intent=capture&currency=USD`;
+  sc.onload = ()=>{
+    paypalSdkIntent = intent;
+    if(intent === 'subscription'){
+      document.getElementById('paypalBox').innerHTML='';
+      window.paypal.Buttons({
+        style:{ shape:'pill', color:'gold', layout:'vertical', label:'subscribe' },
+        createSubscription: (data, actions)=> actions.subscription.create({ plan_id: PAYPAL_PLAN_ID }),
+        onApprove: async (data)=>{
+          try{
+            const r = await fetch('/api/paypal-activate', {
+              method:'POST',
+              headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+session.access_token },
+              body: JSON.stringify({ subscriptionID: data.subscriptionID })
+            });
+            const d = await r.json();
+            if(d.ok){
+              document.getElementById('limitModal').classList.remove('on');
+              await refreshUsage();
+              alert('🎉 Welcome to Premium! 10,000 credits added.');
+            } else {
+              alert('Payment received but activation failed — contact admin on Telegram with your subscription ID: ' + data.subscriptionID);
+            }
+          }catch(e){
+            alert('Activation error — contact admin on Telegram with subscription ID: ' + data.subscriptionID);
+          }
+        }
+      }).render('#paypalBox');
+    } else {
+      document.getElementById('topupBtn').innerHTML='';
+      window.paypal.Buttons({
+        style:{ shape:'pill', color:'gold', layout:'vertical', label:'pay' },
+        createOrder: (data, actions)=> actions.order.create({
+          purchase_units: [{ amount: { value: '5.00', currency_code: 'USD' }, description: 'DNAbeat.pro — 3,000 credits top-up' }]
+        }),
+        onApprove: async (data)=>{
+          try{
+            const r = await fetch('/api/paypal-topup', {
+              method:'POST',
+              headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+session.access_token },
+              body: JSON.stringify({ orderID: data.orderID })
+            });
+            const d = await r.json();
+            if(d.ok){
+              document.getElementById('limitModal').classList.remove('on');
+              await refreshUsage();
+              alert(`⚡ +3,000 credits added! Balance: ${d.credits.toLocaleString()}`);
+            } else {
+              alert('Payment received but crediting failed — contact admin on Telegram with order ID: ' + data.orderID);
+            }
+          }catch(e){
+            alert('Top-up error — contact admin on Telegram with order ID: ' + data.orderID);
+          }
+        }
+      }).render('#topupBtn');
+    }
+  };
+  document.head.appendChild(sc);
+}
 </script>
 </body>
 </html>
