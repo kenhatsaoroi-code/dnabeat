@@ -50,7 +50,12 @@ SUNO PROMPT RULES (these are STRICT — Suno has specific quirks):
 - "lyricsTemplate": section-level tags ONLY describing what happens musically + vocally in each section. Format: "[Section Name - vocal direction, instrument changes, energy level]". Write 2-3 placeholder lyric lines per section with VARIED line lengths (long-short-long alternation). NEVER uniform "square" lines — they make Suno vocals sound flat/robotic. Include breathing space, repetition points, and natural flow.
 - "moreOptions": styleInfluence 45-70 (higher = more faithful to style string), weirdness 15-25 (adds organic variation), vocalGender MUST match what you actually heard — "male"/"female"/"duet"/"none"
 
-All human-readable analysis text must be in ${L}.
+LANGUAGE RULES (CRITICAL — Suno only understands English):
+- "heard" analysis: write in ${L} (this is for the user to read)
+- "prompt.style": ALWAYS in English — Suno cannot read other languages
+- "prompt.exclude": ALWAYS in English — Suno cannot read other languages
+- "prompt.lyricsTemplate": section tags ALWAYS in English (e.g. [Verse 1 - soft, intimate], [Chorus - powerful, soaring vocals]). Placeholder lyric lines should also be in English. If the original song has non-English lyrics, note the language in the section tag but keep the tag itself in English.
+- "tips": write in ${L}
 
 ${JSON_RULE}
 JSON shape:
@@ -91,7 +96,12 @@ LISTEN to the original with extreme precision and diagnose EXACTLY what the curr
 
 Produce a refined prompt achieving 99% match. "style" max 25 words. Section-level lyric tags only with varied line lengths. styleInfluence 45-70, weirdness 15-25. vocalGender MUST match the actual singer.
 
-All human-readable text in ${L}.
+LANGUAGE RULES (CRITICAL — Suno only understands English):
+- "diagnosis" and "changes": write in ${L}
+- "prompt.style": ALWAYS in English
+- "prompt.exclude": ALWAYS in English
+- "prompt.lyricsTemplate": section tags ALWAYS in English. Placeholder lyrics in English.
+- "tips": write in ${L}
 
 ${JSON_RULE}
 JSON shape:
@@ -133,7 +143,12 @@ TRANSFORMATION RULES:
 - Lyrics template: section-level tags with vocal+instrument direction for the NEW style. Lines must have VARIED lengths (long-short alternation), include repetition points, breathing space. NEVER uniform "square" lines.
 - styleInfluence 45-70, weirdness 15-25, vocalGender must match the target vocal choice
 
-All human-readable text in ${L}.
+LANGUAGE RULES (CRITICAL — Suno only understands English):
+- "kept" and "changed": write in ${L}
+- "prompt.style": ALWAYS in English
+- "prompt.exclude": ALWAYS in English
+- "prompt.lyricsTemplate": section tags ALWAYS in English. Placeholder lyrics in English.
+- "tips": write in ${L}
 
 ${JSON_RULE}
 JSON shape:
