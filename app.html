@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0e1a; --panel:#11182bcc; --panel2:#161f36; --line:#232c45;
-  --txt:#e8ecf6; --dim:#8b94ad;
-  --amber:#ffb347; --pink:#ff6b9d; --amber-soft:rgba(255,179,71,.12);
+  --bg:#faf8f5; --panel:#ffffffd9; --panel2:#f4f0e9; --line:#e6dfd3;
+  --txt:#23252e; --dim:#7a7f8e;
+  --amber:#f2920c; --amber-deep:#d97e06; --pink:#f5447e; --amber-soft:rgba(242,146,12,.1);
+  --grad:linear-gradient(120deg,#ffb347,#ff6b9d);
   --mono:'JetBrains Mono',monospace; --disp:'Unbounded',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;line-height:1.6;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background:
-  radial-gradient(900px 500px at 85% -10%, rgba(255,179,71,.07), transparent 60%),
-  radial-gradient(700px 500px at 5% 110%, rgba(255,107,157,.06), transparent 60%);
+  radial-gradient(900px 500px at 85% -10%, rgba(255,179,71,.14), transparent 60%),
+  radial-gradient(700px 500px at 5% 110%, rgba(255,107,157,.1), transparent 60%);
   pointer-events:none;z-index:0}
 .wrap{max-width:880px;margin:0 auto;padding:0 20px 80px;position:relative;z-index:1}
 a{color:inherit;text-decoration:none}
@@ -25,53 +26,54 @@ a{color:inherit;text-decoration:none}
 /* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:12px;flex-wrap:wrap}
 .logo{font-family:var(--disp);font-weight:900;font-size:17px}
-.logo b{background:linear-gradient(120deg,var(--amber),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .top-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pill{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:99px;padding:6px 13px;background:var(--panel2);color:var(--dim);display:flex;align-items:center;gap:7px}
-.pill b{color:var(--amber)}
+.pill{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:99px;padding:6px 13px;background:#fff;color:var(--dim);display:flex;align-items:center;gap:7px;box-shadow:0 1px 3px rgba(35,37,46,.05)}
+.pill b{color:var(--amber-deep)}
 .pill img{width:18px;height:18px;border-radius:50%}
-.lang,.linkbtn{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:10px;padding:6px 11px;cursor:pointer;background:var(--panel2);color:var(--dim);transition:.2s}
-.lang:hover,.linkbtn:hover{border-color:var(--amber);color:var(--amber)}
+.linkbtn{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:10px;padding:6px 11px;cursor:pointer;background:#fff;color:var(--dim);transition:.2s}
+.linkbtn:hover{border-color:var(--amber);color:var(--amber-deep)}
 
 h1{font-family:var(--disp);font-weight:700;font-size:clamp(20px,3.4vw,28px);margin:18px 0 6px}
-h1 .grad{background:linear-gradient(120deg,var(--amber),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .subtitle{color:var(--dim);font-size:14px;margin-bottom:24px}
 
 /* tabs */
 .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.tab{padding:11px 17px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;font-size:14px;transition:.25s;user-select:none}
+.tab{padding:11px 17px;border-radius:13px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px;transition:.25s;user-select:none;box-shadow:0 1px 3px rgba(35,37,46,.04)}
 .tab:hover{border-color:var(--amber)}
-.tab.on{border-color:var(--amber);background:var(--amber-soft);color:var(--amber);font-weight:600}
+.tab.on{border-color:var(--amber);background:var(--amber-soft);color:var(--amber-deep);font-weight:600}
 .pane{display:none}
 .pane.on{display:block;animation:fadein .3s}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* cards */
-.card{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px}
+.card{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 4px 20px rgba(35,37,46,.05)}
 .notice{background:var(--panel);backdrop-filter:blur(8px);border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--dim);font-size:13px;line-height:1.65;margin-bottom:16px}
-.notice b{color:var(--amber)}
+.notice b{color:var(--amber-deep)}
 
 /* drop zone */
-.drop{border:2px dashed var(--line);border-radius:16px;padding:34px 20px;text-align:center;cursor:pointer;transition:.25s;background:rgba(255,255,255,.015)}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:34px 20px;text-align:center;cursor:pointer;transition:.25s;background:rgba(255,255,255,.5)}
 .drop:hover,.drop.over{border-color:var(--amber);background:var(--amber-soft)}
 .drop .big{font-size:30px;margin-bottom:8px}
 .drop p{color:var(--dim);font-size:13.5px}
-.drop .fname{font-family:var(--mono);font-size:13px;color:var(--amber);margin-top:8px;word-break:break-all}
+.drop .fname{font-family:var(--mono);font-size:13px;color:var(--amber-deep);margin-top:8px;word-break:break-all}
 input[type=file]{display:none}
 
-textarea,input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--txt);
+textarea,input[type=text]{width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;color:var(--txt);
   padding:13px 15px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;transition:.2s}
-textarea:focus,input[type=text]:focus{outline:none;border-color:var(--amber)}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
 textarea{min-height:90px}
+textarea::placeholder,input::placeholder{color:#b3b8c4}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;border-radius:13px;padding:14px 24px;
   font-weight:600;font-size:15px;cursor:pointer;transition:.25s;width:100%;margin-top:14px;
-  background:linear-gradient(120deg,var(--amber),var(--pink));color:#1a0f00;font-family:'Inter',sans-serif}
-.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,150,100,.3)}
+  background:var(--grad);color:#3a1d00;font-family:'Inter',sans-serif;box-shadow:0 4px 16px rgba(255,150,100,.3)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,150,100,.4)}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* status with EQ */
-.status{display:none;align-items:center;gap:11px;margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--amber)}
+.status{display:none;align-items:center;gap:11px;margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--amber-deep)}
 .status.on{display:flex}
 .eq{display:flex;gap:3px;align-items:flex-end;height:18px}
 .eq i{width:3px;background:var(--amber);border-radius:2px;animation:eq 1s infinite ease-in-out}
@@ -82,44 +84,59 @@ textarea{min-height:90px}
 /* results */
 .results{display:none}
 .results.on{display:block;animation:fadein .35s}
-.rhead{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+.rhead{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-deep);margin:20px 0 10px;display:flex;align-items:center;gap:10px}
 .rhead::after{content:'';flex:1;height:1px;background:var(--line)}
 .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px;margin-bottom:6px}
-.kv .k{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px 13px}
+.kv .k{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 13px}
 .kv .k .lab{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:3px}
 .kv .k .val{font-size:13.5px}
-.block{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:10px;position:relative}
-.block .lab{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--amber);margin-bottom:7px}
+.block{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:10px;position:relative}
+.block .lab{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--amber-deep);margin-bottom:7px}
 .block .body{font-size:14px;white-space:pre-wrap;word-break:break-word}
 .block .body.mono{font-family:var(--mono);font-size:13px}
 .copy{position:absolute;top:11px;right:11px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);background:var(--bg);
   color:var(--dim);border-radius:8px;padding:4px 10px;cursor:pointer;transition:.2s}
-.copy:hover{border-color:var(--amber);color:var(--amber)}
-.copy.ok{border-color:#5dd39e;color:#5dd39e}
+.copy:hover{border-color:var(--amber);color:var(--amber-deep)}
+.copy.ok{border-color:#1fa971;color:#1fa971}
 ul.plain{list-style:none;display:grid;gap:7px;font-size:13.5px;color:var(--dim)}
 ul.plain li{display:flex;gap:9px}
 ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
 
 /* chips */
-.section-label{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--amber);margin:4px 0 8px}
+.section-label{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--amber-deep);margin:4px 0 8px}
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.chip{padding:10px 15px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:.25s;
+.chip{padding:10px 15px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;transition:.25s;
   font-size:13px;line-height:1.45;position:relative;overflow:hidden;user-select:none}
-.chip:hover{border-color:var(--amber);box-shadow:0 0 14px rgba(255,179,71,.15)}
-.chip.on{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
-.chip.on::after{content:'✓';position:absolute;top:4px;right:7px;font-size:10px;color:var(--amber)}
+.chip:hover{border-color:var(--amber);box-shadow:0 2px 12px rgba(242,146,12,.15)}
+.chip.on{border-color:var(--amber);background:var(--amber-soft);color:var(--amber-deep)}
+.chip.on::after{content:'✓';position:absolute;top:4px;right:7px;font-size:10px;color:var(--amber-deep)}
 .chip .cname{font-weight:600;font-size:13.5px}
 .chip .cdesc{font-size:11px;color:var(--dim);font-family:var(--mono)}
-.chip.on .cdesc{color:var(--amber);opacity:.7}
+.chip.on .cdesc{color:var(--amber-deep);opacity:.7}
 .divider{height:1px;background:var(--line);margin:16px 0}
 
+/* lyrics player */
+.player-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px}
+.player-card audio{width:100%;margin-bottom:6px}
+.lyr-meta{display:flex;gap:14px;font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:4px;flex-wrap:wrap}
+.lyr-meta b{color:var(--amber-deep)}
+.lyr-list{max-height:380px;overflow-y:auto;border:1px solid var(--line);border-radius:13px;background:#fff;padding:8px 0;scroll-behavior:smooth}
+.lyr-line{display:flex;gap:14px;padding:9px 16px;font-size:14.5px;cursor:pointer;transition:.2s;border-left:3px solid transparent}
+.lyr-line:hover{background:var(--amber-soft)}
+.lyr-line .t{font-family:var(--mono);font-size:12px;color:var(--dim);min-width:64px;padding-top:2px}
+.lyr-line.low .t::after{content:' ~';color:var(--pink)}
+.lyr-line.active{background:var(--amber-soft);border-left-color:var(--amber);font-weight:600}
+.lyr-line.active .t{color:var(--amber-deep)}
+.lyr-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.lyr-actions .copy{position:static;padding:9px 18px;font-size:12.5px;border-radius:10px}
+
 /* error + modal */
-.err{display:none;margin-top:13px;background:rgba(255,90,90,.08);border:1px solid rgba(255,90,90,.35);color:#ff9b9b;
+.err{display:none;margin-top:13px;background:rgba(220,60,60,.06);border:1px solid rgba(220,60,60,.3);color:#c43c3c;
   border-radius:12px;padding:12px 15px;font-size:13.5px}
 .err.on{display:block}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(5,8,16,.75);backdrop-filter:blur(5px);z-index:50;align-items:center;justify-content:center;padding:20px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(35,37,46,.4);backdrop-filter:blur(5px);z-index:50;align-items:center;justify-content:center;padding:20px}
 .modal-bg.on{display:flex}
-.modal{background:var(--panel2);border:1px solid var(--amber);border-radius:20px;padding:30px;max-width:420px;text-align:center}
+.modal{background:#fff;border:1px solid var(--amber);border-radius:20px;padding:30px;max-width:420px;text-align:center;box-shadow:0 20px 60px rgba(35,37,46,.2)}
 .modal h3{font-family:var(--disp);font-size:19px;margin-bottom:10px}
 .modal p{color:var(--dim);font-size:14px;margin-bottom:18px}
 .modal .btn{margin-top:0}
@@ -128,6 +145,7 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
 .loading-page{display:flex;min-height:100vh;align-items:center;justify-content:center;font-family:var(--mono);color:var(--dim)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .tab:focus-visible,.chip:focus-visible,.btn:focus-visible,.copy:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media(max-width:640px){ .grid2{grid-template-columns:1fr !important} }
 </style>
 </head>
 <body>
@@ -140,18 +158,18 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
     <div class="top-r">
       <span class="pill" id="usagePill">— / —</span>
       <span class="pill" id="userPill"></span>
-      <button class="lang" id="langBtn">VI / EN</button>
-      <button class="linkbtn" id="logoutBtn" data-i="logout">Đăng xuất</button>
+      <button class="linkbtn" id="logoutBtn">Sign out</button>
     </div>
   </div>
 
   <h1>MUSIC <span class="grad">DNA</span> v3</h1>
-  <p class="subtitle" data-i="subtitle">AI nghe nhạc thật qua Gemini — quét DNA, tinh chỉnh 99%, biến tấu style cho Suno.</p>
+  <p class="subtitle">AI that truly listens via Gemini — scan DNA, refine to 99%, remix styles, sync lyrics.</p>
 
   <div class="tabs" role="tablist">
-    <div class="tab on" data-pane="paneScan" role="tab" tabindex="0">🎧 <span data-i="tab1">Quét & Tạo Prompt</span></div>
-    <div class="tab" data-pane="paneTune" role="tab" tabindex="0">🔁 <span data-i="tab2">Tinh chỉnh 99%</span></div>
-    <div class="tab" data-pane="paneRemix" role="tab" tabindex="0">🎨 <span data-i="tab3">Biến tấu Style</span></div>
+    <div class="tab on" data-pane="paneScan" role="tab" tabindex="0">🎧 Scan & Create Prompt</div>
+    <div class="tab" data-pane="paneTune" role="tab" tabindex="0">🔁 Refine to 99%</div>
+    <div class="tab" data-pane="paneRemix" role="tab" tabindex="0">🎨 Style Remix</div>
+    <div class="tab" data-pane="paneTiming" role="tab" tabindex="0">⏱ Lyrics Timing</div>
   </div>
 
   <!-- ============ TAB 1: SCAN ============ -->
@@ -159,11 +177,11 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
     <div class="card">
       <div class="drop" id="drop1" tabindex="0">
         <div class="big">🎧</div>
-        <p data-i="drop1">Kéo thả hoặc bấm để chọn bài hát (MP3 / WAV / M4A...)<br>Tool tự cắt 60 giây đầu — file không bị lưu lại.</p>
+        <p>Drag & drop or click to choose a song (MP3 / WAV / M4A...)<br>The tool trims the first 60s — your file is never stored.</p>
         <div class="fname" id="fname1"></div>
       </div>
       <input type="file" id="file1" accept="audio/*">
-      <button class="btn" id="goScan" disabled>🧬 <span data-i="btnScan">Quét DNA — Tạo Suno Prompt</span></button>
+      <button class="btn" id="goScan" disabled>🧬 Scan DNA — Create Suno Prompt</button>
       <div class="status" id="status1"><span class="eq"><i></i><i></i><i></i><i></i><i></i></span><span id="statusTxt1"></span></div>
       <div class="err" id="err1"></div>
     </div>
@@ -172,20 +190,39 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
 
   <!-- ============ TAB 2: TUNE 99% ============ -->
   <div class="pane" id="paneTune">
-    <div class="notice" data-i="tuneNotice">Upload <b>bài gốc</b>, dán <b>prompt hiện tại</b> bạn đã dùng trên Suno, và mô tả bản render còn khác chỗ nào — AI sẽ chẩn đoán và chỉnh prompt cho khớp 99%.</div>
+    <div class="notice">Upload the <b>original song</b> and the <b>Suno render</b> — AI listens to both and diagnoses exactly what the prompt needs to match 99%.</div>
     <div class="card">
-      <div class="drop" id="drop2" tabindex="0">
-        <div class="big">🔁</div>
-        <p data-i="drop2">Upload lại bài gốc để AI nghe đối chiếu</p>
-        <div class="fname" id="fname2"></div>
+      <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <div class="section-label">🎵 Original song (the one to clone)</div>
+          <div class="drop" id="drop2" tabindex="0" style="min-height:120px">
+            <div class="big">🎧</div>
+            <p>Upload original song</p>
+            <div class="fname" id="fname2"></div>
+          </div>
+          <input type="file" id="file2" accept="audio/*">
+        </div>
+        <div>
+          <div class="section-label">🔁 Suno rendered version</div>
+          <div class="drop" id="drop2b" tabindex="0" style="min-height:120px">
+            <div class="big">🔁</div>
+            <p>Upload Suno render</p>
+            <div class="fname" id="fname2b"></div>
+          </div>
+          <input type="file" id="file2b" accept="audio/*">
+        </div>
       </div>
-      <input type="file" id="file2" accept="audio/*">
       <div class="divider"></div>
-      <div class="section-label" data-i="tnPrompt">📋 Prompt hiện tại (style + exclude + lyrics)</div>
-      <textarea id="tnPrompt" data-ph="tnPromptPh" placeholder=""></textarea>
-      <div class="section-label" style="margin-top:14px" data-i="tnFeedback">🗣 Bản Suno render còn khác chỗ nào?</div>
-      <textarea id="tnFeedback" data-ph="tnFeedbackPh" placeholder="" style="min-height:70px"></textarea>
-      <button class="btn" id="goTune" disabled>🔁 <span data-i="btnTune">Tinh chỉnh — Đẩy lên 99%</span></button>
+      <div class="section-label">🎵 Style of Music (currently on Suno)</div>
+      <textarea id="tnStyle" placeholder="E.g.: Indie Pop Rock, 128 BPM, bright female vocals, acoustic guitar..." style="min-height:55px"></textarea>
+      <div class="section-label" style="margin-top:12px">🚫 Exclude Styles</div>
+      <textarea id="tnExclude" placeholder="E.g.: Heavy Metal, Rap, lo-fi, orchestral..." style="min-height:55px"></textarea>
+      <div class="section-label" style="margin-top:12px">📝 Lyrics</div>
+      <textarea id="tnLyrics" placeholder="Paste the lyrics you are using on Suno..." style="min-height:100px"></textarea>
+      <div class="divider"></div>
+      <div class="section-label" style="margin-top:4px">🗣 How does the Suno render still differ? (optional)</div>
+      <textarea id="tnFeedback" placeholder="E.g.: vocals still flat, missing synth pad layer, drop not punchy enough..." style="min-height:60px"></textarea>
+      <button class="btn" id="goTune" disabled>🔁 Refine — Push to 99%</button>
       <div class="status" id="status2"><span class="eq"><i></i><i></i><i></i><i></i><i></i></span><span id="statusTxt2"></span></div>
       <div class="err" id="err2"></div>
     </div>
@@ -194,34 +231,54 @@ ul.plain li::before{content:'·';color:var(--amber);font-weight:900}
 
   <!-- ============ TAB 3: REMIX ============ -->
   <div class="pane" id="paneRemix">
-    <div class="notice" id="remixNotice" data-i="remixNotice">⬅ Trước tiên quét bài hát ở tab <b>Quét & Tạo Prompt</b> để có prompt gốc. Sau đó quay lại đây chọn style mới — AI sẽ giữ nguyên DNA bài gốc nhưng chuyển sang phong cách bạn chọn.</div>
+    <div class="notice" id="remixNotice">⬅ First, scan a song in the <b>Scan & Create Prompt</b> tab to get the original prompt. Then come back here, pick a new style — AI will keep the original DNA but transform it into your chosen style.</div>
     <div class="card" id="remixCard" style="display:none">
-      <div class="section-label" data-i="rxStyle">🎵 Chọn style muốn chuyển sang</div>
+      <div class="section-label">🎵 Pick the target style</div>
       <div class="chip-group" id="styleChips"></div>
-      <input type="text" id="rxCustomStyle" data-ph="rxCustomPh" placeholder="">
+      <input type="text" id="rxCustomStyle" placeholder="Or type a custom style (e.g. vinahouse remix, 80s city pop...)">
       <div class="divider"></div>
-      <div class="section-label" data-i="rxVoice">🎤 Chọn giọng hát</div>
+      <div class="section-label">🎤 Pick the vocal</div>
       <div class="chip-group" id="voiceChips"></div>
-      <div class="section-label" data-i="rxMood">💫 Cảm xúc chủ đạo</div>
+      <div class="section-label">💫 Main mood</div>
       <div class="chip-group" id="moodChips"></div>
       <div class="divider"></div>
-      <div class="section-label" data-i="rxLyrics">📝 Lyrics (dán lyrics gốc hoặc để trống — AI sẽ viết khung mới)</div>
-      <textarea id="rxLyrics" style="min-height:110px" data-ph="rxLyricsPh" placeholder=""></textarea>
-      <button class="btn" id="goRemix">🎨 <span data-i="btnRemix">Biến tấu — Tạo prompt phiên bản mới</span></button>
+      <div class="section-label">📝 Lyrics (paste original or leave empty — AI writes a new skeleton)</div>
+      <textarea id="rxLyrics" style="min-height:110px" placeholder="Paste original lyrics here, or leave empty — AI will write a new lyric skeleton on the same theme..."></textarea>
+      <button class="btn" id="goRemix">🎨 Remix — Create the new version prompt</button>
       <div class="status" id="status3"><span class="eq"><i></i><i></i><i></i><i></i><i></i></span><span id="statusTxt3"></span></div>
       <div class="err" id="err3"></div>
     </div>
     <div class="results" id="results3"></div>
+  </div>
+
+  <!-- ============ TAB 4: LYRICS TIMING ============ -->
+  <div class="pane" id="paneTiming">
+    <div class="notice">Upload the song + paste its lyrics — AI listens and assigns a precise timestamp to every line. Export as <b>.lrc</b> (works in karaoke apps, video editors, music players). Songs up to <b>6 minutes</b>.</div>
+    <div class="card">
+      <div class="drop" id="drop4" tabindex="0">
+        <div class="big">⏱</div>
+        <p>Drag & drop or click to choose the song (MP3 / WAV / M4A...)</p>
+        <div class="fname" id="fname4"></div>
+      </div>
+      <input type="file" id="file4" accept="audio/*">
+      <div class="section-label" style="margin-top:16px">📝 Lyrics (one line per row, exactly as sung)</div>
+      <textarea id="tmLyrics" style="min-height:160px" placeholder="Paste the full lyrics here — one line per row.
+Section headers like [Verse] / [Chorus] are OK, they will be skipped."></textarea>
+      <button class="btn" id="goTiming" disabled>⏱ Sync Lyrics — AI Timing</button>
+      <div class="status" id="status4"><span class="eq"><i></i><i></i><i></i><i></i><i></i></span><span id="statusTxt4"></span></div>
+      <div class="err" id="err4"></div>
+    </div>
+    <div class="results" id="results4"></div>
   </div>
 </div>
 
 <!-- limit modal -->
 <div class="modal-bg" id="limitModal">
   <div class="modal">
-    <h3 data-i="lmH">Hết 5 lượt hôm nay 😅</h3>
-    <p data-i="lmP">Gói Free có 5 lượt phân tích mỗi ngày (reset 0h UTC). Nâng cấp Premium để dùng không giới hạn — $10/tháng.</p>
-    <button class="btn" id="lmUpgrade" data-i="lmCta">Nâng cấp Premium</button>
-    <button class="later" id="lmLater" data-i="lmLater">Để mai dùng tiếp</button>
+    <h3>Out of free scans for today 😅</h3>
+    <p>The Free plan includes 5 analyses per day (resets 0:00 UTC). Upgrade to Premium for unlimited — $10/month.</p>
+    <button class="btn" id="lmUpgrade">Upgrade to Premium</button>
+    <button class="later" id="lmLater">Come back tomorrow</button>
   </div>
 </div>
 
@@ -232,82 +289,25 @@ const SUPABASE_URL = 'https://ynyfvszgxhmldjnlcmcy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_gHDgLR-T4w6Gjk2bsIHTZg_1fbt8-dD';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ================= I18N ================= */
-const I18N = {
-vi:{
-  logout:'Đăng xuất', subtitle:'AI nghe nhạc thật qua Gemini — quét DNA, tinh chỉnh 99%, biến tấu style cho Suno.',
-  tab1:'Quét & Tạo Prompt', tab2:'Tinh chỉnh 99%', tab3:'Biến tấu Style',
-  drop1:'Kéo thả hoặc bấm để chọn bài hát (MP3 / WAV / M4A...)<br>Tool tự cắt 60 giây đầu — file không bị lưu lại.',
-  btnScan:'Quét DNA — Tạo Suno Prompt',
-  tuneNotice:'Upload <b>bài gốc</b>, dán <b>prompt hiện tại</b> bạn đã dùng trên Suno, và mô tả bản render còn khác chỗ nào — AI sẽ chẩn đoán và chỉnh prompt cho khớp 99%.',
-  drop2:'Upload lại bài gốc để AI nghe đối chiếu',
-  tnPrompt:'📋 Prompt hiện tại (style + exclude + lyrics)',
-  tnPromptPh:'Dán toàn bộ prompt bạn đang dùng trên Suno...',
-  tnFeedback:'🗣 Bản Suno render còn khác chỗ nào?',
-  tnFeedbackPh:'VD: giọng còn ngang phè phè, thiếu lớp synth pad, drop chưa đủ mạnh...',
-  btnTune:'Tinh chỉnh — Đẩy lên 99%',
-  remixNotice:'⬅ Trước tiên quét bài hát ở tab <b>Quét & Tạo Prompt</b> để có prompt gốc. Sau đó quay lại đây chọn style mới — AI sẽ giữ nguyên DNA bài gốc nhưng chuyển sang phong cách bạn chọn.',
-  remixReady:'✅ Đã có DNA của <b>{title}</b>. Chọn style mới bên dưới — AI giữ hồn bài gốc, đổi hoàn toàn phong cách.',
-  rxStyle:'🎵 Chọn style muốn chuyển sang', rxCustomPh:'Hoặc gõ style tùy chọn (VD: vinahouse remix, city pop 80s...)',
-  rxVoice:'🎤 Chọn giọng hát', rxMood:'💫 Cảm xúc chủ đạo',
-  rxLyrics:'📝 Lyrics (dán lyrics gốc hoặc để trống — AI sẽ viết khung mới)',
-  rxLyricsPh:'Dán lyrics bài gốc vào đây, hoặc để trống — AI sẽ viết khung lyrics mới theo chủ đề bài gốc...',
-  btnRemix:'Biến tấu — Tạo prompt phiên bản mới',
-  stPrep:'⚙️ Đang cắt & nén audio trên trình duyệt...', stScan:'🧬 AI đang nghe và giải mã DNA bài hát...',
-  stTune:'🔁 AI đang nghe lại bài gốc và chẩn đoán prompt...', stRemix:'🎨 AI đang biến tấu bài gốc sang style mới...',
-  rHeard:'🧬 AI ĐÃ NGHE ĐƯỢC GÌ', rPrompt:'⚡ SUNO PROMPT', rTips:'💡 MẸO THÊM',
-  rDiag:'🩺 CHẨN ĐOÁN', rChanges:'🔧 ĐÃ THAY ĐỔI GÌ', rKeep:'🧬 GIỮ NGUYÊN TỪ GỐC', rChange:'🎨 THAY ĐỔI',
-  kGenre:'Thể loại', kBpm:'BPM', kKey:'Key', kVocal:'Giọng hát', kMood:'Mood', kStruct:'Cấu trúc', kProd:'Production', kEnergy:'Năng lượng', kInstr:'Nhạc cụ',
-  bTitle:'Title', bStyle:'Style of Music (≤25 từ)', bExclude:'Exclude Styles', bLyrics:'Lyrics Template', bMore:'More Options',
-  copy:'Copy', copied:'✓ Đã copy', copyAll:'Copy toàn bộ prompt',
-  errFile:'File chưa hợp lệ hoặc trình duyệt không đọc được audio này.', errGeneric:'Có lỗi xảy ra: ',
-  lmH:'Hết 5 lượt hôm nay 😅', lmP:'Gói Free có 5 lượt phân tích mỗi ngày (reset 0h UTC). Nâng cấp Premium để dùng không giới hạn — $10/tháng.',
-  lmCta:'Nâng cấp Premium', lmLater:'Để mai dùng tiếp',
-  soon:'Thanh toán PayPal sắp ra mắt! Hiện tại bạn có thể dùng gói Free (5 lượt/ngày).',
-  vGender:'Vocal Gender', sInf:'Style Influence', wrd:'Weirdness'
-},
-en:{
-  logout:'Sign out', subtitle:'AI that truly listens via Gemini — scan DNA, refine to 99%, remix styles for Suno.',
-  tab1:'Scan & Create Prompt', tab2:'Refine to 99%', tab3:'Style Remix',
-  drop1:'Drag & drop or click to choose a song (MP3 / WAV / M4A...)<br>The tool trims the first 60s — your file is never stored.',
-  btnScan:'Scan DNA — Create Suno Prompt',
-  tuneNotice:'Upload the <b>original song</b>, paste the <b>current prompt</b> you used on Suno, and describe how the render still differs — AI will diagnose and refine the prompt to a 99% match.',
-  drop2:'Upload the original song again for reference listening',
-  tnPrompt:'📋 Current prompt (style + exclude + lyrics)',
-  tnPromptPh:'Paste the full prompt you are using on Suno...',
-  tnFeedback:'🗣 How does the Suno render still differ?',
-  tnFeedbackPh:'E.g.: vocals still flat, missing synth pad layer, drop not punchy enough...',
-  btnTune:'Refine — Push to 99%',
-  remixNotice:'⬅ First, scan a song in the <b>Scan & Create Prompt</b> tab to get the original prompt. Then come back here, pick a new style — AI will keep the original DNA but transform it into your chosen style.',
-  remixReady:'✅ DNA loaded for <b>{title}</b>. Pick a new style below — AI keeps the soul, transforms the sound.',
-  rxStyle:'🎵 Pick the target style', rxCustomPh:'Or type a custom style (e.g. vinahouse remix, 80s city pop...)',
-  rxVoice:'🎤 Pick the vocal', rxMood:'💫 Main mood',
-  rxLyrics:'📝 Lyrics (paste original or leave empty — AI writes a new skeleton)',
-  rxLyricsPh:'Paste original lyrics here, or leave empty — AI will write a new lyric skeleton on the same theme...',
-  btnRemix:'Remix — Create the new version prompt',
-  stPrep:'⚙️ Trimming & compressing audio in your browser...', stScan:'🧬 AI is listening and decoding the song DNA...',
-  stTune:'🔁 AI is re-listening to the original and diagnosing the prompt...', stRemix:'🎨 AI is remixing the original into the new style...',
+const TXT = {
+  stPrep:'⚙️ Trimming & compressing audio in your browser...',
+  stScan:'🧬 AI is listening and decoding the song DNA...',
+  stTune:'🔁 AI is comparing both audio files and diagnosing...',
+  stRemix:'🎨 AI is remixing the original into the new style...',
+  stTiming:'⏱ AI is listening to the full song and timing every line... (30-60s)',
   rHeard:'🧬 WHAT THE AI HEARD', rPrompt:'⚡ SUNO PROMPT', rTips:'💡 EXTRA TIPS',
   rDiag:'🩺 DIAGNOSIS', rChanges:'🔧 WHAT CHANGED', rKeep:'🧬 KEPT FROM ORIGINAL', rChange:'🎨 TRANSFORMED',
+  rTiming:'⏱ SYNCED LYRICS', rNotes:'📌 SYNC NOTES',
   kGenre:'Genre', kBpm:'BPM', kKey:'Key', kVocal:'Vocal', kMood:'Mood', kStruct:'Structure', kProd:'Production', kEnergy:'Energy', kInstr:'Instruments',
   bTitle:'Title', bStyle:'Style of Music (≤25 words)', bExclude:'Exclude Styles', bLyrics:'Lyrics Template', bMore:'More Options',
   copy:'Copy', copied:'✓ Copied', copyAll:'Copy full prompt',
-  errFile:'Invalid file or this browser cannot decode the audio.', errGeneric:'Something went wrong: ',
-  lmH:'Out of free scans for today 😅', lmP:'The Free plan includes 5 analyses per day (resets 0:00 UTC). Upgrade to Premium for unlimited — $10/month.',
-  lmCta:'Upgrade to Premium', lmLater:'Come back tomorrow',
+  errFile:'Invalid file or this browser cannot decode the audio.',
+  errLong:'Song is longer than 6 minutes — please trim it first.',
+  errGeneric:'Something went wrong: ',
   soon:'PayPal checkout coming soon! For now, enjoy the Free plan (5 scans/day).',
   vGender:'Vocal Gender', sInf:'Style Influence', wrd:'Weirdness'
-}};
-let lang = localStorage.getItem('dnabeat_lang') || 'vi';
-const T = k => I18N[lang][k] || k;
-function applyLang(){
-  document.documentElement.lang = lang;
-  document.querySelectorAll('[data-i]').forEach(el=>{ const k=el.getAttribute('data-i'); if(I18N[lang][k]!==undefined) el.innerHTML=I18N[lang][k]; });
-  document.querySelectorAll('[data-ph]').forEach(el=>{ const k=el.getAttribute('data-ph'); if(I18N[lang][k]!==undefined) el.placeholder=I18N[lang][k]; });
-  document.getElementById('langBtn').textContent = lang==='vi'?'VI / EN':'EN / VI';
-  buildChips(); updateRemixNotice();
-}
-document.getElementById('langBtn').onclick = ()=>{ lang=lang==='vi'?'en':'vi'; localStorage.setItem('dnabeat_lang',lang); applyLang(); };
+};
+const T = k => TXT[k] || k;
 
 /* ================= AUTH GUARD ================= */
 let session = null;
@@ -320,7 +320,7 @@ let session = null;
   const u = session.user;
   const pill = document.getElementById('userPill');
   pill.innerHTML = (u.user_metadata?.avatar_url?`<img src="${u.user_metadata.avatar_url}" alt="">`:'') + (u.user_metadata?.name || u.email);
-  applyLang();
+  buildChips(); updateRemixNotice();
   refreshUsage();
 })();
 sb.auth.onAuthStateChange((_e, s)=>{ session = s; if(!s) location.href='/'; });
@@ -333,7 +333,7 @@ async function refreshUsage(){
     const d = await r.json();
     const pill = document.getElementById('usagePill');
     if(d.plan==='premium') pill.innerHTML = '⭐ <b>Premium</b> · ∞';
-    else pill.innerHTML = `🎫 <b>${d.remaining}</b>/${d.limit} ` + (lang==='vi'?'lượt hôm nay':'left today');
+    else pill.innerHTML = `🎫 <b>${d.remaining}</b>/${d.limit} left today`;
   }catch(e){}
 }
 
@@ -349,33 +349,44 @@ document.querySelectorAll('.tab').forEach(t=>{
   t.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} };
 });
 
-/* ================= AUDIO: trim 60s → 16kHz mono WAV → base64 ================= */
-async function prepareAudio(file){
+/* ================= AUDIO PREP: trim → mono WAV → base64 ================= */
+async function prepareAudio(file, maxSecs = 60, rate = 16000, bits = 16){
   const buf = await file.arrayBuffer();
   const AC = window.AudioContext || window.webkitAudioContext;
   const tmp = new AC();
   const decoded = await tmp.decodeAudioData(buf);
   tmp.close();
-  const secs = Math.min(decoded.duration, 60);
-  const rate = 16000;
+  const secs = Math.min(decoded.duration, maxSecs);
   const off = new OfflineAudioContext(1, Math.ceil(secs*rate), rate);
   const src = off.createBufferSource();
   src.buffer = decoded; src.connect(off.destination); src.start(0);
   const rendered = await off.startRendering();
   const ch = rendered.getChannelData(0);
-  // WAV encode (16-bit PCM)
-  const len = ch.length, out = new DataView(new ArrayBuffer(44 + len*2));
+  const len = ch.length;
+  const bytesPer = bits === 8 ? 1 : 2;
+  const out = new DataView(new ArrayBuffer(44 + len*bytesPer));
   const ws = (o,s)=>{ for(let i=0;i<s.length;i++) out.setUint8(o+i, s.charCodeAt(i)); };
-  ws(0,'RIFF'); out.setUint32(4, 36+len*2, true); ws(8,'WAVE'); ws(12,'fmt ');
+  ws(0,'RIFF'); out.setUint32(4, 36+len*bytesPer, true); ws(8,'WAVE'); ws(12,'fmt ');
   out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,1,true);
-  out.setUint32(24,rate,true); out.setUint32(28,rate*2,true); out.setUint16(32,2,true); out.setUint16(34,16,true);
-  ws(36,'data'); out.setUint32(40, len*2, true);
-  for(let i=0;i<len;i++){ const s=Math.max(-1,Math.min(1,ch[i])); out.setInt16(44+i*2, s<0?s*0x8000:s*0x7FFF, true); }
-  // base64
+  out.setUint32(24,rate,true); out.setUint32(28,rate*bytesPer,true); out.setUint16(32,bytesPer,true); out.setUint16(34,bits,true);
+  ws(36,'data'); out.setUint32(40, len*bytesPer, true);
+  for(let i=0;i<len;i++){
+    const s=Math.max(-1,Math.min(1,ch[i]));
+    if(bits===8) out.setUint8(44+i, (s*127+128)|0);
+    else out.setInt16(44+i*2, s<0?s*0x8000:s*0x7FFF, true);
+  }
   const bytes = new Uint8Array(out.buffer);
   let bin=''; const CH=0x8000;
   for(let i=0;i<bytes.length;i+=CH) bin += String.fromCharCode.apply(null, bytes.subarray(i,i+CH));
   return btoa(bin);
+}
+async function audioDuration(file){
+  const buf = await file.arrayBuffer();
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const tmp = new AC();
+  const d = await tmp.decodeAudioData(buf);
+  tmp.close();
+  return d.duration;
 }
 
 /* ================= API ================= */
@@ -424,7 +435,6 @@ function promptBlocks(container, p){
   const mo = p.moreOptions||{};
   const moTxt = `${T('sInf')}: ${mo.styleInfluence??'-'}%\n${T('wrd')}: ${mo.weirdness??'-'}%\n${T('vGender')}: ${mo.vocalGender??'-'}`;
   container.appendChild(block(T('bMore'), moTxt, true));
-  // copy all
   const all = `Title: ${p.title}\n\nStyle of Music:\n${p.style}\n\nExclude Styles:\n${p.exclude}\n\nLyrics:\n${p.lyricsTemplate}\n\nMore Options:\n${moTxt}`;
   const wrap=document.createElement('div'); wrap.style.textAlign='right';
   const b=copyBtn(all); b.style.position='static'; b.textContent=T('copyAll'); b.style.padding='8px 16px';
@@ -441,7 +451,7 @@ function listBlock(container, title, items){
 }
 
 /* ================= DROPZONES ================= */
-let file1=null, file2=null;
+let file1=null, file2=null, file2b=null, file4=null;
 function wireDrop(dropId, inputId, nameId, onFile){
   const drop=document.getElementById(dropId), input=document.getElementById(inputId), nm=document.getElementById(nameId);
   drop.onclick=()=>input.click();
@@ -453,8 +463,12 @@ function wireDrop(dropId, inputId, nameId, onFile){
 }
 wireDrop('drop1','file1','fname1', f=>{ file1=f; document.getElementById('goScan').disabled=false; });
 wireDrop('drop2','file2','fname2', f=>{ file2=f; checkTuneReady(); });
-document.getElementById('tnPrompt').addEventListener('input', checkTuneReady);
-function checkTuneReady(){ document.getElementById('goTune').disabled = !(file2 && document.getElementById('tnPrompt').value.trim()); }
+wireDrop('drop2b','file2b','fname2b', f=>{ file2b=f; checkTuneReady(); });
+wireDrop('drop4','file4','fname4', f=>{ file4=f; checkTimingReady(); });
+document.getElementById('tnStyle').addEventListener('input', checkTuneReady);
+document.getElementById('tmLyrics').addEventListener('input', checkTimingReady);
+function checkTuneReady(){ document.getElementById('goTune').disabled = !(file2 && file2b && document.getElementById('tnStyle').value.trim()); }
+function checkTimingReady(){ document.getElementById('goTiming').disabled = !(file4 && document.getElementById('tmLyrics').value.trim()); }
 
 /* ================= TAB 1: SCAN ================= */
 let lastDNA = JSON.parse(localStorage.getItem('dnabeat_dna')||'null');
@@ -463,9 +477,9 @@ document.getElementById('goScan').onclick = async ()=>{
   btn.disabled=true;
   try{
     setStatus(1,true,T('stPrep'));
-    const audio = await prepareAudio(file1).catch(()=>{ throw new Error(T('errFile')); });
+    const audio = await prepareAudio(file1, 60).catch(()=>{ throw new Error(T('errFile')); });
     setStatus(1,true,T('stScan'));
-    const res = await callAPI({ mode:'scan', lang, audio, mimeType:'audio/wav' });
+    const res = await callAPI({ mode:'scan', audio, mimeType:'audio/wav' });
     renderScan(res);
     lastDNA = { title:res.prompt?.title, heard:res.heard, prompt:res.prompt };
     localStorage.setItem('dnabeat_dna', JSON.stringify(lastDNA));
@@ -493,10 +507,14 @@ document.getElementById('goTune').onclick = async ()=>{
   const btn=document.getElementById('goTune'); setErr(2,null); btn.disabled=true;
   try{
     setStatus(2,true,T('stPrep'));
-    const audio = await prepareAudio(file2).catch(()=>{ throw new Error(T('errFile')); });
+    const audioOrig = await prepareAudio(file2, 30).catch(()=>{ throw new Error(T('errFile')); });
+    const audioSuno = await prepareAudio(file2b, 30).catch(()=>{ throw new Error(T('errFile')); });
     setStatus(2,true,T('stTune'));
-    const res = await callAPI({ mode:'tune', lang, audio, mimeType:'audio/wav',
-      currentPrompt: document.getElementById('tnPrompt').value.trim(),
+    const res = await callAPI({ mode:'tune',
+      audio: audioOrig, sunoAudio: audioSuno, mimeType:'audio/wav',
+      currentStyle: document.getElementById('tnStyle').value.trim(),
+      currentExclude: document.getElementById('tnExclude').value.trim(),
+      currentLyrics: document.getElementById('tnLyrics').value.trim(),
       feedback: document.getElementById('tnFeedback').value.trim() });
     const R=document.getElementById('results2'); R.innerHTML=''; R.classList.add('on');
     listBlock(R, T('rDiag'), res.diagnosis);
@@ -519,24 +537,24 @@ const STYLES = [
   {n:'Afrobeats', d:'log drum · sunny'}, {n:'Rock Anthem', d:'electric · stadium'}
 ];
 const VOICES = [
-  {n:'Nữ trong sáng', en:'Bright female', d:'clear · airy'},
-  {n:'Nữ khàn sâu', en:'Husky female', d:'smoky · deep'},
-  {n:'Nam ấm', en:'Warm male', d:'soft · low'},
-  {n:'Nam rap', en:'Male rap', d:'rhythmic · punch'},
-  {n:'Duet nam nữ', en:'M/F duet', d:'call & response'},
-  {n:'Không lời', en:'Instrumental', d:'no vocals'}
+  {n:'Bright female', d:'clear · airy'},
+  {n:'Husky female', d:'smoky · deep'},
+  {n:'Warm male', d:'soft · low'},
+  {n:'Male rap', d:'rhythmic · punch'},
+  {n:'M/F duet', d:'call & response'},
+  {n:'Instrumental', d:'no vocals'}
 ];
 const MOODS = [
-  {n:'Buồn da diết', en:'Heartbroken', d:''}, {n:'Vui nổi loạn', en:'Wild & fun', d:''},
-  {n:'Lãng mạn ngọt', en:'Sweet romantic', d:''}, {n:'Chill thư giãn', en:'Chill & calm', d:''},
-  {n:'Hype mạnh mẽ', en:'Hype & powerful', d:''}, {n:'Hoài niệm', en:'Nostalgic', d:''},
-  {n:'Bí ẩn tối', en:'Dark mysterious', d:''}, {n:'Tự hào chiến thắng', en:'Triumphant', d:''}
+  {n:'Heartbroken'}, {n:'Wild & fun'},
+  {n:'Sweet romantic'}, {n:'Chill & calm'},
+  {n:'Hype & powerful'}, {n:'Nostalgic'},
+  {n:'Dark mysterious'}, {n:'Triumphant'}
 ];
 let selStyle=null, selVoice=null, selMood=null;
 function chipGroup(elId, items, getSel, setSel){
   const el=document.getElementById(elId); el.innerHTML='';
   items.forEach(it=>{
-    const name = (lang==='en' && it.en) ? it.en : it.n;
+    const name = it.n;
     const c=document.createElement('div'); c.className='chip'+(getSel()===name?' on':''); c.tabIndex=0;
     c.innerHTML=`<div class="cname">${esc(name)}</div>`+(it.d?`<div class="cdesc">${esc(it.d)}</div>`:'');
     const tg=()=>{ setSel(getSel()===name?null:name); buildChips(); };
@@ -552,10 +570,10 @@ function buildChips(){
 function updateRemixNotice(){
   const n=document.getElementById('remixNotice'), card=document.getElementById('remixCard');
   if(lastDNA){
-    n.innerHTML = T('remixReady').replace('{title}', esc(lastDNA.title||'—'));
+    n.innerHTML = `✅ DNA loaded for <b>${esc(lastDNA.title||'—')}</b>. Pick a new style below — AI keeps the soul, transforms the sound.`;
     card.style.display='block';
   } else {
-    n.innerHTML = T('remixNotice');
+    n.innerHTML = '⬅ First, scan a song in the <b>Scan & Create Prompt</b> tab to get the original prompt. Then come back here, pick a new style — AI will keep the original DNA but transform it into your chosen style.';
     card.style.display='none';
   }
 }
@@ -564,7 +582,7 @@ document.getElementById('goRemix').onclick = async ()=>{
   try{
     setStatus(3,true,T('stRemix'));
     const custom = document.getElementById('rxCustomStyle').value.trim();
-    const res = await callAPI({ mode:'remix', lang,
+    const res = await callAPI({ mode:'remix',
       dna: JSON.stringify(lastDNA),
       target:{ style: custom || selStyle, voice: selVoice, mood: selMood,
                lyrics: document.getElementById('rxLyrics').value.trim() } });
@@ -578,6 +596,100 @@ document.getElementById('goRemix').onclick = async ()=>{
   }catch(e){ if(e.message!=='limit') setErr(3, T('errGeneric')+e.message); }
   setStatus(3,false); btn.disabled=false;
 };
+
+/* ================= TAB 4: LYRICS TIMING ================= */
+function parseTime(t){
+  // "mm:ss.xx" -> seconds
+  const m = String(t).match(/(\d+):(\d+(?:\.\d+)?)/);
+  if(!m) return 0;
+  return parseInt(m[1])*60 + parseFloat(m[2]);
+}
+function fmtLRC(t){
+  const s = parseTime(t);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = (s%60).toFixed(2).padStart(5,'0');
+  return `[${mm}:${ss}]`;
+}
+document.getElementById('goTiming').onclick = async ()=>{
+  const btn=document.getElementById('goTiming'); setErr(4,null); btn.disabled=true;
+  try{
+    const dur = await audioDuration(file4).catch(()=>{ throw new Error(T('errFile')); });
+    if(dur > 390) throw new Error(T('errLong'));
+    setStatus(4,true,T('stPrep'));
+    // full song: 8kHz; use 8-bit for songs > 3.3 min to stay under the 4.5MB limit
+    const bits = dur > 200 ? 8 : 16;
+    const audio = await prepareAudio(file4, 390, 8000, bits).catch(()=>{ throw new Error(T('errFile')); });
+    setStatus(4,true,T('stTiming'));
+    const res = await callAPI({ mode:'timing', audio, mimeType:'audio/wav',
+      lyrics: document.getElementById('tmLyrics').value.trim() });
+    renderTiming(res);
+  }catch(e){ if(e.message!=='limit') setErr(4, T('errGeneric')+e.message); }
+  setStatus(4,false); checkTimingReady();
+};
+function renderTiming(res){
+  const R=document.getElementById('results4'); R.innerHTML=''; R.classList.add('on');
+  const lines = (res.lines||[]).map(l=>({ ...l, sec: parseTime(l.time) }));
+
+  const hd=document.createElement('div'); hd.className='rhead'; hd.textContent=T('rTiming'); R.appendChild(hd);
+
+  // player card
+  const pc=document.createElement('div'); pc.className='player-card';
+  const meta=document.createElement('div'); meta.className='lyr-meta';
+  meta.innerHTML = `<span>Duration: <b>${esc(res.duration||'—')}</b></span><span>Vocals start: <b>${esc(res.vocalStart||'—')}</b></span><span>Lines: <b>${lines.length}</b></span><span style="opacity:.7">~ = low confidence</span>`;
+  pc.appendChild(meta);
+  const player=document.createElement('audio'); player.controls=true;
+  player.src = URL.createObjectURL(file4);
+  pc.appendChild(player);
+  R.appendChild(pc);
+
+  // lyric list with sync highlight
+  const list=document.createElement('div'); list.className='lyr-list'; list.id='lyrList';
+  lines.forEach((l,i)=>{
+    const row=document.createElement('div'); row.className='lyr-line'+(l.confidence==='low'?' low':''); row.dataset.i=i;
+    row.innerHTML=`<span class="t">${esc(l.time)}</span><span class="x">${esc(l.text)}</span>`;
+    row.onclick=()=>{ player.currentTime = l.sec; player.play(); };
+    list.appendChild(row);
+  });
+  R.appendChild(list);
+
+  player.addEventListener('timeupdate', ()=>{
+    const t = player.currentTime;
+    let active = -1;
+    for(let i=0;i<lines.length;i++){ if(t >= lines[i].sec - 0.15) active = i; else break; }
+    list.querySelectorAll('.lyr-line').forEach((row,i)=>{
+      const on = i===active;
+      if(on && !row.classList.contains('active')) row.scrollIntoView({block:'center',behavior:'smooth'});
+      row.classList.toggle('active', on);
+    });
+  });
+
+  // actions: copy LRC, download .lrc, copy SRT
+  const lrc = lines.map(l=>`${fmtLRC(l.time)}${l.text}`).join('\n');
+  const srt = lines.map((l,i)=>{
+    const start=l.sec, end=(lines[i+1]?.sec ?? start+4);
+    const f=s=>{ const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'),
+      sec=String(Math.floor(s%60)).padStart(2,'0'), ms=String(Math.round(s%1*1000)).padStart(3,'0');
+      return `${h}:${m}:${sec},${ms}`; };
+    return `${i+1}\n${f(start)} --> ${f(end)}\n${l.text}\n`;
+  }).join('\n');
+
+  const act=document.createElement('div'); act.className='lyr-actions';
+  const b1=copyBtn(lrc); b1.textContent='📋 Copy LRC';
+  b1.onclick=()=>{ navigator.clipboard.writeText(lrc); b1.textContent=T('copied'); setTimeout(()=>b1.textContent='📋 Copy LRC',1800); };
+  const b2=document.createElement('button'); b2.className='copy'; b2.textContent='⬇ Download .lrc';
+  b2.onclick=()=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([lrc],{type:'text/plain'}));
+    a.download=(file4.name.replace(/\.[^.]+$/,'')||'lyrics')+'.lrc'; a.click();
+  };
+  const b3=copyBtn(srt); b3.textContent='📋 Copy SRT';
+  b3.onclick=()=>{ navigator.clipboard.writeText(srt); b3.textContent=T('copied'); setTimeout(()=>b3.textContent='📋 Copy SRT',1800); };
+  act.appendChild(b1); act.appendChild(b2); act.appendChild(b3);
+  R.appendChild(act);
+
+  listBlock(R, T('rNotes'), res.notes);
+  R.scrollIntoView({behavior:'smooth',block:'start'});
+}
 
 /* ================= LIMIT MODAL ================= */
 function showLimit(){ document.getElementById('limitModal').classList.add('on'); }
