@@ -158,14 +158,31 @@ async function callGemini(parts) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ role: 'user', parts }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 4096, responseMimeType: 'application/json' }
+      generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'application/json' }
     })
   });
   const data = await r.json();
   if (!r.ok) throw new Error(data?.error?.message || `Gemini HTTP ${r.status}`);
   const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
   const clean = text.replace(/```json|```/g, '').trim();
-  return JSON.parse(clean);
+  // Try parsing; if truncated JSON, attempt to fix by closing brackets
+  try {
+    return JSON.parse(clean);
+  } catch (e) {
+    // Attempt recovery: close any open strings and brackets
+    let fixed = clean;
+    // Close unterminated string
+    const dq = (fixed.match(/"/g) || []).length;
+    if (dq % 2 !== 0) fixed += '"';
+    // Close open arrays/objects
+    const opens = (fixed.match(/[\[{]/g) || []).length;
+    const closes = (fixed.match(/[\]}]/g) || []).length;
+    for (let i = 0; i < opens - closes; i++) {
+      const lastOpen = Math.max(fixed.lastIndexOf('['), fixed.lastIndexOf('{'));
+      fixed += fixed[lastOpen] === '[' ? ']' : '}';
+    }
+    return JSON.parse(fixed);
+  }
 }
 
 export default async function handler(req, res) {
