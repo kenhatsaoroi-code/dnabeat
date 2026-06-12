@@ -3,8 +3,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ynyfvszgxhmldjnlcmcy.supabase.co';
-const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY; // set in Vercel env
-const GEMINI_KEY   = process.env.GEMINI_API_KEY;            // set in Vercel env
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const GEMINI_KEY   = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const FREE_LIMIT   = 5;
 
@@ -30,139 +30,160 @@ function todayUTC() {
 // ---------- Gemini prompt builders ----------
 const JSON_RULE = `Respond with ONLY a valid JSON object. No markdown fences, no preamble, no trailing text.`;
 
-function scanPrompt(lang) {
-  const L = lang === 'en' ? 'English' : 'Vietnamese';
+function scanPrompt() {
   return `You are MUSIC DNA — a Grammy-level music producer, mixing engineer, and the world's #1 Suno AI prompt engineer. You have produced 10,000+ tracks across every genre. LISTEN to the attached audio with extreme precision and reverse-engineer a Suno prompt that recreates this song's DNA.
 
 CRITICAL LISTENING CHECKLIST — answer each precisely:
 1. VOCAL: Is the singer male or female? Listen to pitch range, timbre, chest/head voice. Soprano/alto = female. Tenor/bass = male. Two voices alternating = duet. Be 100% accurate — getting gender wrong ruins the entire prompt.
-2. VOCAL CHARACTER: breathy? husky? clear/bright? nasal? raspy? falsetto? vibrato-heavy? whisper sections? ad-libs? Describe the EXACT vocal texture — this is what makes Suno output sound human vs robotic.
+2. VOCAL CHARACTER: breathy? husky? clear/bright? nasal? raspy? falsetto? vibrato-heavy? whisper sections? ad-libs? Describe the EXACT vocal texture.
 3. BPM: Count precisely — tap along mentally. Don't guess round numbers.
-4. KEY: Identify the actual musical key (e.g. "Eb minor", "A major"). If uncertain, give best estimate.
-5. INSTRUMENTS: List every distinct instrument/sound layer you hear (e.g. "fingerpicked acoustic guitar", "sub bass 808", "shimmering synth pad", "trap hi-hats", "orchestral strings pizzicato"). Be specific — "guitar" is too vague.
-6. PRODUCTION STYLE: Describe the mix — is it lo-fi/dusty? clean/polished? heavily compressed? spacious/reverb-heavy? layered? minimalist? What era/school does it sound like?
-7. ENERGY CURVE: How does energy flow across the song? (e.g. "starts intimate/quiet → builds through pre-chorus → explodes at chorus → drops to bridge → final chorus bigger than first")
-8. STRUCTURE: Map the exact sections (Intro, Verse 1, Pre-Chorus, Chorus, Verse 2, Bridge, Outro, etc.)
+4. KEY: Identify the actual musical key (e.g. "Eb minor", "A major").
+5. INSTRUMENTS: List every distinct instrument/sound layer you hear. Be specific — "fingerpicked acoustic guitar" not just "guitar".
+6. PRODUCTION STYLE: Describe the mix — lo-fi/dusty? clean/polished? compressed? spacious/reverb-heavy? layered? minimalist?
+7. ENERGY CURVE: How does energy flow across the song?
+8. STRUCTURE: Map the exact sections (Intro, Verse 1, Pre-Chorus, Chorus, etc.)
 
-SUNO PROMPT RULES (these are STRICT — Suno has specific quirks):
-- "style": max 25 words, comma-separated. Format: "[genre], [sub-genre], [BPM] BPM, [vocal description], [2-3 key instruments], [mood], [production adjective]". Example: "Indie Pop Rock, 128 BPM, bright clear female vocals, acoustic guitar, driving drums, synth pads, hopeful, energetic, modern polished production"
-- "exclude": list genres and elements that would pull Suno in the WRONG direction. Be specific. Example: "Heavy Metal, Rap, lo-fi, overly melancholic, acoustic folk ballad, orchestral"
-- "lyricsTemplate": section-level tags ONLY describing what happens musically + vocally in each section. Format: "[Section Name - vocal direction, instrument changes, energy level]". Write 2-3 placeholder lyric lines per section with VARIED line lengths (long-short-long alternation). NEVER uniform "square" lines — they make Suno vocals sound flat/robotic. Include breathing space, repetition points, and natural flow.
-- "moreOptions": styleInfluence 45-70 (higher = more faithful to style string), weirdness 15-25 (adds organic variation), vocalGender MUST match what you actually heard — "male"/"female"/"duet"/"none"
+SUNO PROMPT RULES (STRICT):
+- "style": max 25 words, comma-separated, ALWAYS IN ENGLISH. Format: "[genre], [sub-genre], [BPM] BPM, [vocal description], [2-3 key instruments], [mood], [production adjective]"
+- "exclude": ALWAYS IN ENGLISH. List genres/elements that would pull Suno in the wrong direction.
+- "lyricsTemplate": ALWAYS IN ENGLISH. Section tags ONLY like [Verse 1 - soft, intimate, acoustic guitar]. Write 2-3 placeholder lyric lines per section with VARIED line lengths (long-short alternation). NEVER uniform "square" lines — they make Suno vocals flat/robotic.
+- "moreOptions": styleInfluence 45-70, weirdness 15-25, vocalGender MUST match what you actually heard.
+- "title": ALWAYS IN ENGLISH.
 
-LANGUAGE RULES (CRITICAL — Suno only understands English):
-- "heard" analysis: write in ${L} (this is for the user to read)
-- "prompt.style": ALWAYS in English — Suno cannot read other languages
-- "prompt.exclude": ALWAYS in English — Suno cannot read other languages
-- "prompt.lyricsTemplate": section tags ALWAYS in English (e.g. [Verse 1 - soft, intimate], [Chorus - powerful, soaring vocals]). Placeholder lyric lines should also be in English. If the original song has non-English lyrics, note the language in the section tag but keep the tag itself in English.
-- "tips": write in ${L}
+ALL analysis text ("heard", "tips") must be in English.
 
 ${JSON_RULE}
 JSON shape:
 {
- "heard": { "genre":"", "bpm":"", "key":"", "vocal":"(MUST describe gender + character precisely)", "instruments":["(be specific for each)"], "mood":"", "structure":"(list all sections)", "production":"(describe mix style)", "energy":"(describe the full energy arc)" },
- "prompt": {
-   "title": "(creative title capturing the song's essence)",
-   "style": "(max 25 words, comma-separated, include vocal gender description)",
-   "exclude": "(specific genres/elements to avoid)",
-   "lyricsTemplate": "(section tags with vocal+instrument direction, varied-length placeholder lines)",
-   "moreOptions": { "styleInfluence": 0, "weirdness": 0, "vocalGender": "(MUST match heard vocal)" }
- },
- "tips": ["(specific Suno tips for this song)", "(what to listen for when comparing Suno output vs original)"]
-}`;
-}
-
-function tunePrompt(lang, currentPrompt, feedback) {
-  const L = lang === 'en' ? 'English' : 'Vietnamese';
-  return `You are MUSIC DNA — a Grammy-level producer and the world's #1 Suno prompt refinement specialist. You have tuned 10,000+ Suno prompts to 99% match.
-
-The attached audio is the ORIGINAL reference song. The user tried to recreate it on Suno with this prompt:
-
---- CURRENT PROMPT ---
-${currentPrompt}
---- END ---
-
-User feedback on what's still wrong: "${feedback || 'no specific feedback, just get closer to the original'}"
-
-LISTEN to the original with extreme precision and diagnose EXACTLY what the current prompt fails to capture. Common Suno failure points to check:
-- Wrong vocal gender or character (this alone ruins everything)
-- BPM off by even 5-10 makes the feel completely different
-- "style" string too vague — Suno needs specific descriptors, not generic genres
-- Missing key instruments (e.g. forgot the synth pad, or the fingerpicked guitar)
-- "exclude" too weak — Suno drifted into unwanted territory
-- Lyrics template has uniform "square" lines → makes vocals sound flat/robotic (fix: vary line lengths, add breathing space)
-- styleInfluence too high (>70 = rigid) or too low (<45 = Suno ignores style)
-- Missing production descriptors (reverb type, compression style, mix width)
-
-Produce a refined prompt achieving 99% match. "style" max 25 words. Section-level lyric tags only with varied line lengths. styleInfluence 45-70, weirdness 15-25. vocalGender MUST match the actual singer.
-
-LANGUAGE RULES (CRITICAL — Suno only understands English):
-- "diagnosis" and "changes": write in ${L}
-- "prompt.style": ALWAYS in English
-- "prompt.exclude": ALWAYS in English
-- "prompt.lyricsTemplate": section tags ALWAYS in English. Placeholder lyrics in English.
-- "tips": write in ${L}
-
-${JSON_RULE}
-JSON shape:
-{
- "diagnosis": ["(specific problem 1)", "(specific problem 2)", "..."],
- "changes": [ { "what":"(what was changed)", "why":"(why this brings it closer to original)" } ],
+ "heard": { "genre":"", "bpm":"", "key":"", "vocal":"(gender + character)", "instruments":["(specific)"], "mood":"", "structure":"(all sections)", "production":"(mix style)", "energy":"(full arc)" },
  "prompt": {
    "title": "",
-   "style": "(max 25 words, precise descriptors)",
-   "exclude": "(expanded to prevent drift)",
-   "lyricsTemplate": "(improved section tags + varied-length placeholder lines)",
-   "moreOptions": { "styleInfluence": 0, "weirdness": 0, "vocalGender": "(MUST match original)" }
+   "style": "(max 25 words, English)",
+   "exclude": "(English)",
+   "lyricsTemplate": "(English section tags + varied-length placeholder lines)",
+   "moreOptions": { "styleInfluence": 0, "weirdness": 0, "vocalGender": "(match heard)" }
  },
- "tips": ["(what to listen for when comparing new render vs original)"]
+ "tips": ["", ""]
 }`;
 }
 
-function remixPrompt(lang, dna, target) {
-  const L = lang === 'en' ? 'English' : 'Vietnamese';
-  return `You are MUSIC DNA — a Grammy-level producer specializing in genre transformation and the world's #1 Suno style remix specialist.
+function tunePrompt(currentStyle, currentExclude, currentLyrics, feedback) {
+  return `You are MUSIC DNA — a Grammy-level producer and the world's #1 Suno prompt refinement specialist.
 
-Here is the complete DNA of an original song (from a previous analysis):
+You will receive TWO audio files:
+- AUDIO 1: The ORIGINAL reference song (the target to clone)
+- AUDIO 2: The SUNO RENDER (what the current prompt produced)
 
+The user's current Suno prompt:
+--- STYLE OF MUSIC ---
+${currentStyle || '(not provided)'}
+--- EXCLUDE STYLES ---
+${currentExclude || '(not provided)'}
+--- LYRICS ---
+${currentLyrics || '(not provided)'}
+--- END ---
+
+User feedback: "${feedback || 'no specific feedback, just get closer to the original'}"
+
+LISTEN TO BOTH AUDIO FILES CAREFULLY AND COMPARE:
+1. Audio 1 (original) — note the vocal gender/character, BPM, instruments, energy, production
+2. Audio 2 (Suno render) — note exactly what's different
+3. Diagnose what the current prompt fails to capture
+
+Common Suno failure points:
+- Wrong vocal gender or character (this alone ruins everything)
+- BPM off by even 5-10 changes the feel completely
+- "style" string too vague — Suno needs specific descriptors
+- Missing key instruments
+- "exclude" too weak — Suno drifted into unwanted territory
+- Lyrics template has uniform "square" lines → flat/robotic vocals (fix: vary line lengths)
+- Missing production descriptors (reverb, compression, mix width)
+
+Produce a refined prompt achieving 99% match. ALL PROMPT FIELDS IN ENGLISH. "style" max 25 words. Section-level lyric tags only with varied line lengths. styleInfluence 45-70, weirdness 15-25.
+
+${JSON_RULE}
+JSON shape:
+{
+ "diagnosis": ["(specific problem 1)", "(specific problem 2)"],
+ "changes": [ { "what":"(changed)", "why":"(why closer to original)" } ],
+ "prompt": {
+   "title": "(English)",
+   "style": "(max 25 words, English)",
+   "exclude": "(English)",
+   "lyricsTemplate": "(English section tags + varied-length lines)",
+   "moreOptions": { "styleInfluence": 0, "weirdness": 0, "vocalGender": "(match original)" }
+ },
+ "tips": ["(what to listen for comparing new render vs original)"]
+}`;
+}
+
+function remixPrompt(dna, target) {
+  return `You are MUSIC DNA — a Grammy-level producer specializing in genre transformation and Suno style remixing.
+
+Original song DNA:
 --- ORIGINAL DNA ---
 ${dna}
 --- END ---
 
-TRANSFORM this into a completely new version with these target choices:
+TRANSFORM into a new version:
 - Target style: ${target.style || 'keep original genre'}
 - Target vocal: ${target.voice || 'keep original vocal type'}
 - Target mood: ${target.mood || 'keep original mood'}
-- Lyrics (user-provided, adapt to new style; if empty, write new lyrics TEMPLATE on the same theme with varied line lengths): ${target.lyrics ? '\n' + target.lyrics : '(empty — write new template)'}
+- Lyrics (adapt to new style; if empty, write new template on same theme): ${target.lyrics ? '\n' + target.lyrics : '(empty — write new template)'}
 
-TRANSFORMATION RULES:
-- KEEP the recognizable DNA: the core melody feel, the emotional theme, the hook concept, the song's "soul"
-- CHANGE everything about the sonic presentation: instruments, production style, BPM (if genre requires), vocal approach, energy curve
-- The result must sound like a completely different song that somehow reminds you of the original — like hearing a rock ballad reimagined as city pop, or a K-pop hit turned into lo-fi chill
-- "style" max 25 words with specific descriptors for the NEW genre
-- Lyrics template: section-level tags with vocal+instrument direction for the NEW style. Lines must have VARIED lengths (long-short alternation), include repetition points, breathing space. NEVER uniform "square" lines.
-- styleInfluence 45-70, weirdness 15-25, vocalGender must match the target vocal choice
-
-LANGUAGE RULES (CRITICAL — Suno only understands English):
-- "kept" and "changed": write in ${L}
-- "prompt.style": ALWAYS in English
-- "prompt.exclude": ALWAYS in English
-- "prompt.lyricsTemplate": section tags ALWAYS in English. Placeholder lyrics in English.
-- "tips": write in ${L}
+RULES:
+- KEEP: core melody feel, emotional theme, hook concept
+- CHANGE: instruments, production, BPM (if genre requires), vocal approach, energy curve
+- ALL PROMPT FIELDS IN ENGLISH
+- "style" max 25 words. Lyrics: section-level tags, VARIED line lengths, NEVER square lines.
+- styleInfluence 45-70, weirdness 15-25
 
 ${JSON_RULE}
 JSON shape:
 {
- "kept": ["(DNA element kept from original)", "..."],
- "changed": ["(what was transformed and how)", "..."],
+ "kept": ["(DNA kept)"],
+ "changed": ["(what transformed)"],
  "prompt": {
-   "title": "(new creative title reflecting the transformation)",
-   "style": "(max 25 words for the NEW style)",
-   "exclude": "(genres/elements to avoid in the new version)",
-   "lyricsTemplate": "(section tags for new style + varied-length placeholder lines)",
+   "title": "(English)",
+   "style": "(max 25 words, English)",
+   "exclude": "(English)",
+   "lyricsTemplate": "(English section tags + varied-length lines)",
    "moreOptions": { "styleInfluence": 0, "weirdness": 0, "vocalGender": "" }
  },
- "tips": ["(how to get the best Suno render for this specific transformation)"]
+ "tips": [""]
+}`;
+}
+
+function timingPrompt(lyrics) {
+  return `You are MUSIC DNA TIMING — a professional lyric synchronization engine, like the systems behind Spotify and Apple Music synced lyrics.
+
+You receive an audio file (a full song) and the song's complete lyrics text. Your job: listen to the audio and determine the EXACT start time of every lyric line.
+
+THE LYRICS (sync these lines, in order):
+--- LYRICS ---
+${lyrics}
+--- END ---
+
+SYNC RULES:
+1. Listen to the full audio from start to end. Identify when the vocalist begins singing EACH line of the provided lyrics.
+2. Keep the lines EXACTLY as provided — same order, same text. Do not rewrite, translate, merge, or split lines.
+3. Skip empty lines and section headers like [Verse], [Chorus] — only time actual sung lines. But if the lyrics contain section headers, you may use them to navigate the structure.
+4. Timestamps in "mm:ss.xx" format (minutes:seconds.centiseconds), e.g. "00:14.50". The time is when the FIRST syllable of that line is sung.
+5. Times must be strictly increasing.
+6. Instrumental intro: the first line's time should reflect when singing actually starts, not 00:00 (unless singing starts immediately).
+7. If a line repeats (e.g. chorus repeated), time EACH occurrence separately in order.
+8. Be as precise as possible — aim for ±0.5 second accuracy. Listen carefully to vocal onsets.
+9. Also estimate each line's confidence: "high" if you clearly heard the vocal onset, "low" if the vocals were buried in the mix and you estimated.
+
+${JSON_RULE}
+JSON shape:
+{
+ "duration": "(total audio length mm:ss)",
+ "vocalStart": "(when singing first begins, mm:ss.xx)",
+ "lines": [
+   { "time": "00:14.50", "text": "(lyric line exactly as provided)", "confidence": "high" }
+ ],
+ "notes": ["(any sync caveats, e.g. heavy autotune made onsets blurry in bridge)"]
 }`;
 }
 
@@ -173,23 +194,19 @@ async function callGemini(parts) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ role: 'user', parts }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'application/json' }
+      generationConfig: { temperature: 0.4, maxOutputTokens: 8192, responseMimeType: 'application/json' }
     })
   });
   const data = await r.json();
   if (!r.ok) throw new Error(data?.error?.message || `Gemini HTTP ${r.status}`);
   const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
   const clean = text.replace(/```json|```/g, '').trim();
-  // Try parsing; if truncated JSON, attempt to fix by closing brackets
   try {
     return JSON.parse(clean);
   } catch (e) {
-    // Attempt recovery: close any open strings and brackets
     let fixed = clean;
-    // Close unterminated string
     const dq = (fixed.match(/"/g) || []).length;
     if (dq % 2 !== 0) fixed += '"';
-    // Close open arrays/objects
     const opens = (fixed.match(/[\[{]/g) || []).length;
     const closes = (fixed.match(/[\]}]/g) || []).length;
     for (let i = 0; i < opens - closes; i++) {
@@ -203,17 +220,15 @@ async function callGemini(parts) {
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
-  if (!SERVICE_KEY || !GEMINI_KEY) return res.status(500).json({ error: 'server_not_configured', detail: 'Missing SUPABASE_SERVICE_ROLE_KEY or GEMINI_API_KEY env vars' });
+  if (!SERVICE_KEY || !GEMINI_KEY) return res.status(500).json({ error: 'server_not_configured' });
 
   const sb = admin();
   const user = await getUserFromReq(req, sb);
   if (!user) return res.status(401).json({ error: 'unauthorized' });
 
-  // plan
   const { data: profile } = await sb.from('profiles').select('plan').eq('id', user.id).maybeSingle();
   const plan = profile?.plan === 'premium' ? 'premium' : 'free';
 
-  // quota
   const day = todayUTC();
   const { data: row } = await sb.from('usage_daily').select('count').eq('user_id', user.id).eq('day', day).maybeSingle();
   const count = row?.count || 0;
@@ -221,18 +236,37 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: 'limit_reached', plan, count, limit: FREE_LIMIT });
   }
 
-  const { mode, lang = 'vi', audio, mimeType = 'audio/wav', currentPrompt, feedback, dna, target } = req.body || {};
-  if (!['scan', 'tune', 'remix'].includes(mode)) return res.status(400).json({ error: 'bad_mode' });
-  if ((mode === 'scan' || mode === 'tune') && !audio) return res.status(400).json({ error: 'audio_required' });
+  const { mode, audio, sunoAudio, mimeType = 'audio/wav',
+          currentStyle, currentExclude, currentLyrics, feedback,
+          dna, target, lyrics } = req.body || {};
+
+  if (!['scan', 'tune', 'remix', 'timing'].includes(mode)) return res.status(400).json({ error: 'bad_mode' });
+  if ((mode === 'scan' || mode === 'timing') && !audio) return res.status(400).json({ error: 'audio_required' });
+  if (mode === 'tune' && (!audio || !sunoAudio)) return res.status(400).json({ error: 'both_audio_required' });
   if (mode === 'remix' && !dna) return res.status(400).json({ error: 'dna_required' });
+  if (mode === 'timing' && !lyrics) return res.status(400).json({ error: 'lyrics_required' });
 
   let parts;
   if (mode === 'scan') {
-    parts = [{ text: scanPrompt(lang) }, { inline_data: { mime_type: mimeType, data: audio } }];
+    parts = [
+      { text: scanPrompt() },
+      { inline_data: { mime_type: mimeType, data: audio } }
+    ];
   } else if (mode === 'tune') {
-    parts = [{ text: tunePrompt(lang, currentPrompt || '', feedback || '') }, { inline_data: { mime_type: mimeType, data: audio } }];
+    parts = [
+      { text: tunePrompt(currentStyle, currentExclude, currentLyrics, feedback) },
+      { text: '--- AUDIO 1: ORIGINAL REFERENCE SONG ---' },
+      { inline_data: { mime_type: mimeType, data: audio } },
+      { text: '--- AUDIO 2: SUNO RENDER TO COMPARE ---' },
+      { inline_data: { mime_type: mimeType, data: sunoAudio } }
+    ];
+  } else if (mode === 'timing') {
+    parts = [
+      { text: timingPrompt(lyrics) },
+      { inline_data: { mime_type: mimeType, data: audio } }
+    ];
   } else {
-    parts = [{ text: remixPrompt(lang, dna, target || {}) }];
+    parts = [{ text: remixPrompt(dna, target || {}) }];
   }
 
   let result;
@@ -242,7 +276,6 @@ export default async function handler(req, res) {
     return res.status(502).json({ error: 'gemini_failed', detail: String(e.message || e) });
   }
 
-  // increment usage (service role bypasses RLS)
   const newCount = count + 1;
   await sb.from('usage_daily').upsert({ user_id: user.id, day, count: newCount }, { onConflict: 'user_id,day' });
 
